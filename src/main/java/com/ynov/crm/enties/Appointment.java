@@ -29,7 +29,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 
 @Accessors(chain = true )
-public class Apointment {
+public class Appointment {
 	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)

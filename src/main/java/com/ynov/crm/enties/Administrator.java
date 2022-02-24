@@ -30,7 +30,7 @@ public class Administrator {
 	@Column(name = "adminId")
 	private String adminId;
 	
-	@Column(name = "s")
+	@Column(name = "fistName")
 	private String fistName;
 	
 	@Column(name = "lastName")
