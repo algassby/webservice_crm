@@ -34,7 +34,7 @@ import com.ynov.crm.responsedto.ResponseMessage;
 @CrossOrigin(origins = "*", maxAge = 3600,allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/auth")
-public class AuthRestAPIs {
+public class AuthRestController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
