@@ -1,9 +1,13 @@
 package com.ynov.crm.service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import java.util.stream.Collectors;
+
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,7 +31,9 @@ public class UserPrinciple implements UserDetails {
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
     private String email;
-    
+    private String adminId;
+   	@Temporal(TemporalType.TIMESTAMP)
+    private Date lastUpdate;
  
     
     
@@ -46,7 +52,7 @@ public class UserPrinciple implements UserDetails {
 	 * @param authorities
 	 */
 	public UserPrinciple(String userId, String firstName, String lastName, String username, String email,
-			String password, Collection<? extends GrantedAuthority> authorities) {
+			String password, String adminId , Date lastUpdate,Collection<? extends GrantedAuthority> authorities) {
 		super();
 		this.userId = userId;
 		this.firstName = firstName;
@@ -63,7 +69,7 @@ public class UserPrinciple implements UserDetails {
         ).collect(Collectors.toList());
 
         return new UserPrinciple( user.getUserId(), user.getFirstName(),user.getLastName(), user.getUsername(), user.getEmail(),
-        		user.getPassword(),authorities
+        		user.getPassword(),user.getAdminId(), user.getLastUpdate(), authorities
                
                
         );

@@ -18,7 +18,7 @@ import com.ynov.crm.enties.AppUser;
 @Repository
 public interface AppUserRepository extends JpaRepository<AppUser, String> {
 	AppUser findByEmail(String email);
-	Optional<AppUser> findByUsername(String email);
+	Optional<AppUser> findByUsername(String username);
 	Boolean existsByEmail(String email);
 	Boolean existsByUsername(String email);
 
