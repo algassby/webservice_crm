@@ -59,7 +59,6 @@ public class OrganizationServiceImpl implements OrganizationService{
 
 	@Override
 	public List<OrganizationResponsDto> findAll() {
-		// TODO Auto-generated method stub
 		return (organizationRepository.findAll())
 				.stream()
 				.map(organization -> organisationMapper.OrganisationToOrganizationResponseDto(organization))
