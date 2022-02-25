@@ -1,5 +1,6 @@
 package com.ynov.crm;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class WebserviceCrmApplication {
 					roleDao.save(roleUser);
 			}
 			
+			
 			AppRole roleAdmin = new AppRole();
 			roleAdmin.setRoleName("ROLE_ADMIN");
 			if(!roleDao.existsByRoleName("ROLE_ADMIN")) {
@@ -45,7 +47,8 @@ public class WebserviceCrmApplication {
 				roles.add(roleDao.findByRoleName("ROLE_ADMIN"));
 				
 				//user.setUserId(UUID.randomUUID().toString());
-				user.setEmail("admin@admin.com").setFirstName("admin").setLastName("admin").setPassword(encoder.encode("123456789")).setUsername("admin").setRoles(roles);
+				user.setEmail("admin@admin.com").setFirstName("admin").setLastName("admin").setPassword(encoder.encode("123456789")).setUsername("admin")
+				.setRoles(roles).setLastUpdate(new Date()).setAdminId(user.getUserId());
 			
 				dao.save(user);
 			}

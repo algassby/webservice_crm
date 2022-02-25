@@ -26,8 +26,8 @@ import com.ynov.crm.enties.AppRole;
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
+import com.ynov.crm.requestdto.AppUserRequestDto;
 import com.ynov.crm.requestdto.LoginForm;
-import com.ynov.crm.requestdto.UserRequestDto;
 import com.ynov.crm.responsedto.JwtResponse;
 import com.ynov.crm.responsedto.ResponseMessage;
 
@@ -66,7 +66,7 @@ public class AuthRestAPIs {
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody UserRequestDto userDto) {
+	public ResponseEntity<?> registerUser(@Valid @RequestBody AppUserRequestDto userDto) {
 		if (userRepository.existsByUsername(userDto.getUsername())) {
 			return new ResponseEntity<>(new ResponseMessage("Fail -> Username is already taken!"),
 					HttpStatus.BAD_REQUEST);
