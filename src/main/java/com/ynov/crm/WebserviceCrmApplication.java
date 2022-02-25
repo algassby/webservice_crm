@@ -16,8 +16,6 @@ import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
 
-import com.ynov.crm.enties.Customer;
-
 @SpringBootApplication
 public class WebserviceCrmApplication {
 	@Autowired

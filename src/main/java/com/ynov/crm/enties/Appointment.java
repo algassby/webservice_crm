@@ -41,8 +41,6 @@ public class Appointment {
 	
 	@Column(name = "date")
 	private Date date;
-	
-	@Column(name = "customer")
-	private Customer customer;
+
 
 }
