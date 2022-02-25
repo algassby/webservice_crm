@@ -68,32 +68,63 @@ public class OrganizationServiceImpl implements OrganizationService{
 
 	@Override
 	public OrganizationResponsDto save(OrganizationRequestDto organizationRequestDto) {
-		// TODO Auto-generated method stub
-		return null;
+		Organization organizationSaved = organisationMapper
+				.OrganisationRequestDtoToOrganization(organizationRequestDto);
+		
+		return organisationMapper
+				.OrganisationToOrganizationResponseDto
+				(organizationRepository.save(organizationSaved));
 	}
 
 	@Override
 	public OrganizationResponsDto update(OrganizationRequestDto organizationRequestDto, String orgaId) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Organization organizationUpdated = organizationRepository.findById(orgaId).get();
+		organizationUpdated.setName(organizationRequestDto.getName())
+		.setAddress(organizationRequestDto.getAddress())
+		.setLogo(organizationRequestDto.getLogo())
+		.setNbSalaris(organizationRequestDto.getNbSalaris());
+		
+		return organisationMapper
+				.OrganisationToOrganizationResponseDto
+				(organizationRepository.save(organizationUpdated));
 	}
 
 	@Override
-	public String remouve(String orgaId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public String remove(String orgaId) {
+		if (organizationRepository.existsById(orgaId)) {
+			organizationRepository.deleteById(orgaId);
+			
+			return "remove organization successfully";
+		}else {
+			return "remove organization fail";
+		}
 
+		
+	}
+ 
 	@Override
 	public String addCustomerToOrganization(String orgaName, String userName) {
-		// TODO Auto-generated method stub
-		return null;
+	Organization organization = organizationRepository
+		.findByName(userName);
+	organization.getUsers()
+	.add(userRepository.findByUsername(userName).get());
+		organizationRepository.save(organization);
+		
+		return "add customer" +userName+" to organisation "+orgaName+" successfully";
+		
 	}
 
 	@Override
-	public String remouveCustomerToOrganization(String orgaName, String userName) {
-		// TODO Auto-generated method stub
-		return null;
+	public String removeCustomerToOrganization(String orgaName, String userName) {
+		
+		Organization organization = organizationRepository
+				.findByName(userName);
+		
+		organization.getUsers().removeIf(user->user.getUsername().equals(userName));
+		organizationRepository.save(organization);
+		
+		return "remove customer" +userName+" to organisation "+orgaName+" successfully";
 	}
 
 }

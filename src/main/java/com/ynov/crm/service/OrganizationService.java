@@ -14,9 +14,9 @@ public interface OrganizationService {
 	
 	public OrganizationResponsDto save(OrganizationRequestDto organizationRequestDto);
 	public OrganizationResponsDto update(OrganizationRequestDto organizationRequestDto,String orgaId);
-	public String remouve(String orgaId);
+	public String remove(String orgaId);
 	
 	public String addCustomerToOrganization(String orgaName, String userName);
-	public String remouveCustomerToOrganization(String orgaName,String userName);
+	public String removeCustomerToOrganization(String orgaName,String userName);
 
 }

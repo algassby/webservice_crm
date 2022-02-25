@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
-import org.apache.tomcat.jni.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
