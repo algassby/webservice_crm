@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,70 +19,79 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ynov.crm.requestdto.OrganizationRequestDto;
 import com.ynov.crm.service.OrganizationService;
 
-@CrossOrigin(origins = "*", maxAge = 3600,allowedHeaders = "*")
+@CrossOrigin(origins = "*", maxAge = 3600, allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/organizations")
 public class OrganizationRestController {
-	
+
 	@Autowired
 	private OrganizationService organizationService;
-	
-	
+
 	@PostMapping("/add")
 	public ResponseEntity<?> saveOrganization(@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
-	
-		return new ResponseEntity<>(organizationService.save(organizationRequestDto),HttpStatus.CREATED);
+		if (!organizationRequestDto.verifObligatoryField()) {
+			return new ResponseEntity<>("required field not found (name and/or address)",
+					HttpStatus.BAD_REQUEST);
+		}
+		if (!organizationRequestDto.verifOptionalField()) {
+			return new ResponseEntity<>("illegal argument for nbSalaris ",
+					HttpStatus.BAD_REQUEST);
+		}
+		
+		if (organizationService.existsByName(organizationRequestDto.getName())) {
+			return new ResponseEntity<>("Organization " + organizationRequestDto.getName() + " already exist.",
+					HttpStatus.BAD_REQUEST);
+		} else {
+			return new ResponseEntity<>(organizationService.save(organizationRequestDto), HttpStatus.CREATED);
+		}
 	}
-	
+
 	@GetMapping("/find/{orgaName}")
 	public ResponseEntity<?> findOrganizationByName(@Valid @PathVariable String orgaName) {
-		if(orgaName.isBlank()||orgaName.isEmpty()||orgaName.equals("")) {
-			return new ResponseEntity<>("This name of organization is empty or null.",HttpStatus.BAD_REQUEST);
-		}else if(organizationService.existsByName(orgaName)) {
-			return new ResponseEntity<>(organizationService.findByName(orgaName),HttpStatus.FOUND);
-		}else {
-			return new ResponseEntity<>("This organization is unknow.",HttpStatus.NOT_FOUND);
+		if (orgaName.isBlank() || orgaName.isEmpty() || orgaName.equals("")) {
+			return new ResponseEntity<>("This name of organization is empty or null.", HttpStatus.BAD_REQUEST);
+		} else if (organizationService.existsByName(orgaName)) {
+			return new ResponseEntity<>(organizationService.findByName(orgaName), HttpStatus.FOUND);
+		} else {
+			return new ResponseEntity<>("Organization " + orgaName + " is unknow.", HttpStatus.NOT_FOUND);
 		}
 
 	}
-	
+
 	@DeleteMapping(value = "/delete/{orgaName}")
-    public ResponseEntity<?> deleteOrganization(@Valid @PathVariable String orgaName){
-		if(orgaName.isBlank()||orgaName.isEmpty()||orgaName.equals("")) {
-			return new ResponseEntity<>("This name of organization is empty or null.",HttpStatus.BAD_REQUEST);
-			
-		}else if(organizationService.existsByName(orgaName)) {
-			return new ResponseEntity<>(organizationService
-					.remove(organizationService
-					.findByName(orgaName)
-					.getOrgaId()),HttpStatus.OK);
-			
-		}else {
-			return new ResponseEntity<>(organizationService
-					.remove(organizationService
-					.findByName(orgaName)
-					.getOrgaId()),HttpStatus.NOT_FOUND);
-		}
-       
-     
-    }
+	public ResponseEntity<?> deleteOrganization(@Valid @PathVariable String orgaName) {
+		if (orgaName.isBlank() || orgaName.isEmpty() || orgaName.equals("")) {
+			return new ResponseEntity<>("This name of organization is empty or null.", HttpStatus.BAD_REQUEST);
 
-    @PutMapping(value = "/update/{name}")
-    public ResponseEntity<?> updateOrganization(@Valid @PathVariable String orgaName,
-    		@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
+		} else if (organizationService.existsByName(orgaName)) {
+			return new ResponseEntity<>(
+					organizationService.remove(organizationService.findByName(orgaName).getOrgaId()), HttpStatus.OK);
 
-    	if(orgaName.isBlank()||orgaName.isEmpty()||orgaName.equals("")) {
-			return new ResponseEntity<>("This name of organization is empty or null.",HttpStatus.BAD_REQUEST);
-			
-		}else if(organizationService.existsByName(orgaName)) {		
-			return new ResponseEntity<>(organizationService.update(organizationRequestDto,orgaName),HttpStatus.OK);
-				
-		}else {
-			return new ResponseEntity<>("This organization is unknow.",HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<>("Organization " + orgaName + " is unknow", HttpStatus.NOT_FOUND);
 		}
 
-       
-    }
+	}
+
+	@PutMapping(value = "/update/{orgaName}")
+	public ResponseEntity<?> updateOrganization(@Valid @PathVariable String orgaName,
+			@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
+		if (!organizationRequestDto.verifObligatoryField()) {
+			return new ResponseEntity<>("required field not found (name and/or address)",
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if (orgaName.isBlank() || orgaName.isEmpty() || orgaName.equals("")) {
+			return new ResponseEntity<>("This name of organization is empty or null.", HttpStatus.BAD_REQUEST);
+
+		} else if (organizationService.existsByName(orgaName)) {
+			return new ResponseEntity<>(organizationService.update(organizationRequestDto, orgaName), HttpStatus.OK);
+
+		} else {
+			return new ResponseEntity<>("This organization is unknow.", HttpStatus.NOT_FOUND);
+		}
+
+	}
 
 //    @PostMapping(value = "{orgaName}/customer/add")
 //    public ResponseEntity<?> saveCustomerToOrganization(@Valid @PathVariable String orgaName

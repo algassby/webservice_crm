@@ -77,9 +77,9 @@ public class OrganizationServiceImpl implements OrganizationService{
 	}
 
 	@Override
-	public OrganizationResponsDto update(OrganizationRequestDto organizationRequestDto, String orgaId) {
+	public OrganizationResponsDto update(OrganizationRequestDto organizationRequestDto, String orgaName) {
 		
-		Organization organizationUpdated = organizationRepository.findById(orgaId).get();
+		Organization organizationUpdated = organizationRepository.findByName(orgaName);
 		organizationUpdated.setName(organizationRequestDto.getName())
 		.setAddress(organizationRequestDto.getAddress())
 		.setLogo(organizationRequestDto.getLogo())
