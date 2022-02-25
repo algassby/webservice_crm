@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,9 +34,10 @@ import lombok.experimental.Accessors;
 public class Appointment {
 	
 	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY)
-	@Column(name = "ApointmentId")
-	private String ApointmentId;
+	@GeneratedValue(generator = "uuid")
+	@GenericGenerator(name = "uuid", strategy = "uuid2")
+	@Column(name = "ApointId", length = 60)
+	private String ApointId;
 	
 	@Column(name = "label")
 	private String label;
