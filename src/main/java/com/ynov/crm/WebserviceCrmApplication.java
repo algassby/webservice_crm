@@ -23,6 +23,7 @@ public class WebserviceCrmApplication {
 	PasswordEncoder encoder;
 	public static void main(String[] args) {
 		SpringApplication.run(WebserviceCrmApplication.class, args);
+
 	}
 	
 	@Bean

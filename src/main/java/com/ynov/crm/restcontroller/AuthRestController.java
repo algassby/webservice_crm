@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
-import org.apache.tomcat.jni.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,7 @@ import com.ynov.crm.responsedto.ResponseMessage;
 @CrossOrigin(origins = "*", maxAge = 3600,allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/auth")
-public class AuthRestAPIs {
+public class AuthRestController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
