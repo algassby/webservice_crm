@@ -46,16 +46,12 @@ public class OrganizationRestController {
 		}
 	}
 
-	@GetMapping("/find/{orgaName}")
-	public ResponseEntity<?> findOrganizationByName(@Valid @PathVariable String orgaName) {
+	@GetMapping("/find/{orgaId}")
+	public ResponseEntity<?> findOrganizationByName(@Valid @PathVariable String orgaId) {
 
-		if(orgaName.isBlank()||orgaName.isEmpty()||orgaName.equals("")) {
-			return new ResponseEntity<>("This name of organization is empty or null.",HttpStatus.BAD_REQUEST);
-		}
-//		else if(organizationService.existsByName(orgaName)) {
-//			return new ResponseEntity<>(organizationService.findByName(orgaName),HttpStatus.FOUND);
-//		}
-	else {
+		if(organizationService.getOrganization(orgaId)!=null) {
+			return new ResponseEntity<>(organizationService.getOrganization(orgaId),HttpStatus.FOUND);
+		}else {
 			return new ResponseEntity<>("This organization is unknow.",HttpStatus.NOT_FOUND);
 		}
 
@@ -95,27 +91,5 @@ public class OrganizationRestController {
 		}
 
 	}
-
-//    @PostMapping(value = "{orgaName}/customer/add")
-//    public ResponseEntity<?> saveCustomerToOrganization(@Valid @PathVariable String orgaName
-//    		,@Valid @PathVariable String UserNameCustomer) {
-//    	//test organization exist
-//    	if(orgaName.isBlank()||orgaName.isEmpty()||orgaName.equals("")) {
-//			return new ResponseEntity<>("This name of organization is empty or null.",HttpStatus.BAD_REQUEST);
-//			
-//		}else if(!organizationService.existsByName(orgaName)) {
-//			return new ResponseEntity<>("This organization is unknow.",HttpStatus.NOT_FOUND);
-//		}
-//    	//test user existe
-//    	if(orgaName.isBlank()||orgaName.isEmpty()||orgaName.equals("")) {
-//			return new ResponseEntity<>("This surname of customer is empty or null.",HttpStatus.BAD_REQUEST);
-//			
-//		}else if(organizationService.existsByName(orgaName)) {
-//			return new ResponseEntity<>("This organization is unknow.",HttpStatus.NOT_FOUND);
-//		}
-//	}
-//
-//    @DeleteMapping(value = "{orgaName}/customer/delete/{surnameCustomer}")
-//	public String removeCustomerToOrganization(String orgaName,String userName);
 
 }
