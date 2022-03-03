@@ -29,7 +29,6 @@ public class OrganizationRestController {
 
 	@PostMapping("/save")
 	public ResponseEntity<?> saveOrganization(@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
-<<<<<<< HEAD
 	
 		return new ResponseEntity<>(organizationService.save(organizationRequestDto),HttpStatus.CREATED);
 	}
@@ -42,11 +41,10 @@ public class OrganizationRestController {
 	public ResponseEntity<?> findOrganizationByName(@Valid @PathVariable String orgaName) {
 		if(orgaName.isBlank()||orgaName.isEmpty()||orgaName.equals("")) {
 			return new ResponseEntity<>("This name of organization is empty or null.",HttpStatus.BAD_REQUEST);
-=======
+
 		if (!organizationRequestDto.verifObligatoryField()) {
 			return new ResponseEntity<>("required field not found (name and/or address)",
 					HttpStatus.BAD_REQUEST);
->>>>>>> bb49ec392acd40bff62bfe759e1b35e8e327185f
 		}
 		if (!organizationRequestDto.verifOptionalField()) {
 			return new ResponseEntity<>("illegal argument for nbSalaris ",

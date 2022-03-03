@@ -54,10 +54,11 @@ public class Organization {
 	@Column(name = "logo")
 	private String logo;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private AppUser user;
 	
-	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+	
+	@OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private Set<Customer> customers = new HashSet<>();
 	
 }
