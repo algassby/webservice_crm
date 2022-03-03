@@ -92,6 +92,7 @@ public class OrganizationRestController {
 			return new ResponseEntity<>("required field not found (name and/or address)",
 					HttpStatus.BAD_REQUEST);
 		}
+    	
 
 		if (orgaName.isBlank() || orgaName.isEmpty() || orgaName.equals("")) {
 			return new ResponseEntity<>("This name of organization is empty or null.", HttpStatus.BAD_REQUEST);
