@@ -37,30 +37,10 @@ public class OrganizationRestController {
 		return new ResponseEntity<>(organizationService.findAll(), HttpStatus.OK);
 	}
 	
-	@GetMapping("/find/{orgaName}")
-	public ResponseEntity<?> findOrganizationByName(@Valid @PathVariable String orgaName) {
-		if(orgaName.isBlank()||orgaName.isEmpty()||orgaName.equals("")) {
-			return new ResponseEntity<>("This name of organization is empty or null.",HttpStatus.BAD_REQUEST);
-
-		if (!organizationRequestDto.verifObligatoryField()) {
-			return new ResponseEntity<>("required field not found (name and/or address)",
-					HttpStatus.BAD_REQUEST);
-		}
-		if (!organizationRequestDto.verifOptionalField()) {
-			return new ResponseEntity<>("illegal argument for nbSalaris ",
-					HttpStatus.BAD_REQUEST);
-		}
-		
-		if (organizationService.existsByName(organizationRequestDto.getName())) {
-			return new ResponseEntity<>("Organization " + organizationRequestDto.getName() + " already exist.",
-					HttpStatus.BAD_REQUEST);
-		} else {
-			return new ResponseEntity<>(organizationService.save(organizationRequestDto), HttpStatus.CREATED);
-		}
-	}
+	
 
 	@GetMapping("/find/{orgaId}")
-	public ResponseEntity<?> findOrganizationByName(@Valid @PathVariable String orgaId) {
+	public ResponseEntity<?> findOrganizationById(@Valid @PathVariable String orgaId) {
 
 		if(organizationService.getOrganization(orgaId)!=null) {
 			return new ResponseEntity<>(organizationService.getOrganization(orgaId),HttpStatus.FOUND);
