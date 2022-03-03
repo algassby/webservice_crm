@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.ynov.crm.enties.Organization;
@@ -24,8 +25,6 @@ public class OrganizationServiceImpl implements OrganizationService{
 	private OrganizationRepository organizationRepository;
 	private AppUserRepository userRepository;
 	private OrganisationMapper organisationMapper;
-	
-	
 	
 	@Autowired
 	public OrganizationServiceImpl(OrganizationRepository organizationRepository, AppUserRepository userRepository,
@@ -69,8 +68,9 @@ public class OrganizationServiceImpl implements OrganizationService{
 
 	@Override
 	public OrganizationResponsDto save(OrganizationRequestDto organizationRequestDto) {
+		UserPrinciple user =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Organization organizationSaved = organisationMapper
-				.OrganisationRequestDtoToOrganization(organizationRequestDto);
+				.OrganisationRequestDtoToOrganization(organizationRequestDto).setUser(userRepository.findByUsername(user.getUsername()).get());
 		
 		return organisationMapper
 				.OrganisationToOrganizationResponseDto
@@ -104,28 +104,28 @@ public class OrganizationServiceImpl implements OrganizationService{
 		
 	}
  
-	@Override
-	public String addCustomerToOrganization(String orgaName, String userName) {
-	Organization organization = organizationRepository
-		.findByName(userName);
-	organization.getUsers()
-	.add(userRepository.findByUsername(userName).get());
-		organizationRepository.save(organization);
-		
-		return "add customer" +userName+" to organisation "+orgaName+" successfully";
-		
-	}
-
-	@Override
-	public String removeCustomerToOrganization(String orgaName, String userName) {
-		
-		Organization organization = organizationRepository
-				.findByName(userName);
-		
-		organization.getUsers().removeIf(user->user.getUsername().equals(userName));
-		organizationRepository.save(organization);
-		
-		return "remove customer" +userName+" to organisation "+orgaName+" successfully";
-	}
+//	@Override
+//	public String addCustomerToOrganization(String orgaName, String userName) {
+//	Organization organization = organizationRepository
+//		.findByName(userName);
+//	organization.getUsers()
+//	.add(userRepository.findByUsername(userName).get());
+//		organizationRepository.save(organization);
+//		
+//		return "add customer" +userName+" to organisation "+orgaName+" successfully";
+//		
+//	}
+//
+//	@Override
+//	public String removeCustomerToOrganization(String orgaName, String userName) {
+//		
+//		Organization organization = organizationRepository
+//				.findByName(userName);
+//		
+//		organization.getUsers().removeIf(user->user.getUsername().equals(userName));
+//		organizationRepository.save(organization);
+//		
+//		return "remove customer" +userName+" to organisation "+orgaName+" successfully";
+//	}
 
 }

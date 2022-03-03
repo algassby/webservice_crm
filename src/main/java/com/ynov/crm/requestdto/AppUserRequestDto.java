@@ -45,6 +45,5 @@ public class AppUserRequestDto {
 	@NotBlank
 	@NotNull
 	private String roleName;
-
     
 }

@@ -16,15 +16,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
-
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -84,6 +81,9 @@ public class AppUser {
 	@Column(name = "lastUpdate")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;
+	
+	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+	private Set<Organization> organizations = new HashSet<>();
 	
 	public void addRole(AppRole appRole) {
 		this.getRoles().add(appRole);

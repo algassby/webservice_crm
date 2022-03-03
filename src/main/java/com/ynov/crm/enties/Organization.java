@@ -1,15 +1,16 @@
 package com.ynov.crm.enties;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -45,7 +46,7 @@ public class Organization {
 	private String name;
 	
 	@Column(name = "Address")
-	private String Address;
+	private String address;
 	
 	@Column(name = "nbSalaris")
 	private int nbSalaris;
@@ -53,7 +54,10 @@ public class Organization {
 	@Column(name = "logo")
 	private String logo;
 	
+	@ManyToOne
+	private AppUser user;
+	
 	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-	private List<AppUser> users = new ArrayList<AppUser>();
+	private Set<Customer> customers = new HashSet<>();
 	
 }

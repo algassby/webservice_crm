@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.ynov.crm.enties.AppRole;
+import com.ynov.crm.enties.Organization;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,6 +44,7 @@ public class AppUserResponseDto {
     private String adminId;
 	@Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdate;
+	private Set<Organization> organizations = new HashSet<>();
 	
 
 }

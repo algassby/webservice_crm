@@ -1,9 +1,15 @@
 package com.ynov.crm.responsedto;
 
-import java.util.ArrayList;
-import java.util.List;
+
+
+import java.util.HashSet;
+
+import java.util.Set;
+
+
 
 import com.ynov.crm.enties.AppUser;
+import com.ynov.crm.enties.Customer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,10 +24,11 @@ public class OrganizationResponsDto {
 	
 	private String orgaId;
 	private String name;
-	private String Address;
+	private String address;
 	private int nbSalaris;	
 	private String logo;
-	private List<AppUser> users = new ArrayList<AppUser>();
+	private AppUser user;
+	private Set<Customer> customers = new HashSet<>();
 
 
 }

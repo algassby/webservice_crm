@@ -32,6 +32,10 @@ public class OrganizationRestController {
 	
 		return new ResponseEntity<>(organizationService.save(organizationRequestDto),HttpStatus.CREATED);
 	}
+	@GetMapping
+	public ResponseEntity<?> getAllOrganization() {
+		return new ResponseEntity<>(organizationService.findAll(), HttpStatus.OK);
+	}
 	
 	@GetMapping("/find/{orgaName}")
 	public ResponseEntity<?> findOrganizationByName(@Valid @PathVariable String orgaName) {
