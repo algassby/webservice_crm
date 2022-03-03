@@ -27,7 +27,7 @@ public class OrganizationRestController {
 	private OrganizationService organizationService;
 	
 	
-	@PostMapping("/add")
+	@PostMapping("/save")
 	public ResponseEntity<?> saveOrganization(@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
 	
 		return new ResponseEntity<>(organizationService.save(organizationRequestDto),HttpStatus.CREATED);
@@ -37,9 +37,11 @@ public class OrganizationRestController {
 	public ResponseEntity<?> findOrganizationByName(@Valid @PathVariable String orgaName) {
 		if(orgaName.isBlank()||orgaName.isEmpty()||orgaName.equals("")) {
 			return new ResponseEntity<>("This name of organization is empty or null.",HttpStatus.BAD_REQUEST);
-		}else if(organizationService.existsByName(orgaName)) {
-			return new ResponseEntity<>(organizationService.findByName(orgaName),HttpStatus.FOUND);
-		}else {
+		}
+//		else if(organizationService.existsByName(orgaName)) {
+//			return new ResponseEntity<>(organizationService.findByName(orgaName),HttpStatus.FOUND);
+//		}
+	else {
 			return new ResponseEntity<>("This organization is unknow.",HttpStatus.NOT_FOUND);
 		}
 
