@@ -34,6 +34,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -44,12 +45,13 @@ import lombok.experimental.Accessors;
 @Table(name = "Customers")
 //@NamedEntityGraph(name = "Customer.detail",
 //attributeNodes = @NamedAttributeNode("fileInfos"))
-@Data
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true )
 @Getter
 @Setter
+@ToString
 
 public class Customer implements Serializable {
 
@@ -73,9 +75,11 @@ public class Customer implements Serializable {
 	@Column(name = "phoneNumer",length = 12)
 	private String  phoneNumer;
 	
-	@ManyToOne
+	@ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "orga_id")
 	private Organization organization;
-	//@JoinColumn(name = "fileId", referencedColumnName = "fileId")
+	
 	
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.EAGER)
 	  @JoinTable(name="customers_images", 
