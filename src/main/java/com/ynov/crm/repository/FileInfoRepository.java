@@ -11,4 +11,6 @@ import com.ynov.crm.enties.FileInfo;
 public interface FileInfoRepository extends JpaRepository<FileInfo, String>{
 
 	public FileInfo findByFileName(String fileName);
+	public Boolean existsByFileName(String fileName);
+	
 }

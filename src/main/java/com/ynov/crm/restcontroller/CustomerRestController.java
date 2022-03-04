@@ -98,7 +98,7 @@ public class CustomerRestController {
 		
 	}
 	@PutMapping("/update/addManyImage/{customerId}")
-	public ResponseEntity<?> addManyImage(@PathVariable  String customerId, @RequestParam(value = "file") MultipartFile files []) {
+	public ResponseEntity<?> addManyImage(@PathVariable  String customerId, @RequestParam(value = "files") MultipartFile files []) {
 		if(files.length==0) {
 			return new ResponseEntity<>(new ResponseMessage("Cannot  Upload images to customer, cause file is empty!"), HttpStatus.BAD_REQUEST); 
 		}
@@ -114,6 +114,13 @@ public class CustomerRestController {
 		}
 		
 		return new ResponseEntity<>(customerService.removeManyImageToCustomer(customerId, jsonRequestDto), HttpStatus.OK); 
+		
+	}
+	
+	@PutMapping("/update/removeImage/{customerId}")
+	public ResponseEntity<?> addImageToCustomer(@PathVariable  String customerId, @RequestParam(value = "imageName") String imageName) {
+		
+		return new ResponseEntity<>(customerService.removeImageToCustomer(customerId, imageName), HttpStatus.OK); 
 		
 	}
 	
