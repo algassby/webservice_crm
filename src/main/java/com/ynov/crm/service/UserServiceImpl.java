@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,12 +47,15 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Transactional
 @Slf4j
+
 public class UserServiceImpl implements UserService {
 
 	private AppUserRepository appUserRepo;
 	private UserMapper userMapper;
 	private AppRoleRepository  appRoleRepo;
 	private FileInfoService fileService;
+	@Autowired
+	private PasswordEncoder encoder;
 	
 	
 	/**
@@ -110,30 +114,33 @@ public class UserServiceImpl implements UserService {
 
 
 	@Override
+
 	public AppUserResponseDto save(AppUserRequestDto userDto) {
-	
+
+
 		UserPrinciple currentUser  =  (UserPrinciple) SecurityContextHolder. getContext(). getAuthentication(). getPrincipal();
-		
 		log.info(currentUser.toString());
-		AppUser appUser =  userMapper.appUserRequestDtoToAppUser(userDto).setLastUpdate(new Date()).setAdminId(currentUser.getUserId		());
+		AppUser appUser =  userMapper.appUserRequestDtoToAppUser(userDto).setLastUpdate(new Date()).setAdminId(currentUser.getUserId()).setPassword(encoder.encode(userDto.getPassword()));
+
 		Set<AppRole> roles = appUser.getRoles();
-		
+
 		if(userDto.getRoleName()!=null) {
 			if(userDto.getRoleName().isEmpty()) {
 				AppRole role = appRoleRepo.findByRoleName("ROLE_USER");
 				roles.add(role);
 			}
-		
+
 			else {
 				roles.add(appRoleRepo.findByRoleName(userDto.getRoleName()));
 			}
-			
+
 		}
 		else {
 			roles.add(appRoleRepo.findByRoleName("ROLE_USER"));
 		}
-		
+
 		appUser.setRoles(roles);
+		//appUser.setPassword(this.encoder.encode(appUser.getPassword()));
 		return userMapper.appUserToAppUserResponseDto(appUserRepo.save(appUser));
 	}
 

@@ -115,7 +115,6 @@ public class UserRestController {
 	@PostMapping("/save")
 	ResponseEntity<?> save(@Valid @RequestBody AppUserRequestDto userDto){
 		Date minDate = userService.getAllUsers().stream().map(AppUserResponseDto::getLastUpdate).max(Date::compareTo).get();
-		log.info(minDate.toString());
 		if(!dateManagement.dateCompare(new Date(),minDate)) {
 			log.info(String.valueOf(dateManagement.dateCompare(new Date(),userService.getAllUsers().stream().map(AppUserResponseDto::getLastUpdate).max(Date::compareTo).get())));
 			return new ResponseEntity<>(new ResponseMessage("Must be wait for 1 minute"),HttpStatus.OK);
@@ -123,7 +122,10 @@ public class UserRestController {
 		if(userService.existsByEmail(userDto.getEmail()) || userService.existsByUsername(userDto.getUsername())) {
 			return new ResponseEntity<>(new ResponseMessage("User already taken"),HttpStatus.BAD_REQUEST);
 		}
-		return  new ResponseEntity<>(userService.save(userDto),HttpStatus.OK);
+		if (userService.save(userDto) != null){
+			return new ResponseEntity<>("L'administrateur a été ajouté", HttpStatus.OK);
+		}
+		return  new ResponseEntity<>("Erreur lors de l'ajout de l'administrateur",HttpStatus.EXPECTATION_FAILED);
 	}
 	
 	@PutMapping("/update")
