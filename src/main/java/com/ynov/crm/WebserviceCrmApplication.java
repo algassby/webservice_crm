@@ -5,12 +5,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.servlet.MultipartConfigElement;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.unit.DataSize;
 
 import com.ynov.crm.enties.AppRole;
 import com.ynov.crm.enties.AppUser;
@@ -57,6 +61,8 @@ public class WebserviceCrmApplication {
 			
 		};
 	}
+	
+	
 	
 
 }

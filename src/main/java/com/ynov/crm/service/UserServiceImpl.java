@@ -19,9 +19,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ynov.crm.enties.AppRole;
 import com.ynov.crm.enties.AppUser;
+import com.ynov.crm.enties.FileInfo;
 import com.ynov.crm.mapper.UserMapper;
 import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
@@ -49,6 +51,7 @@ public class UserServiceImpl implements UserService {
 	private AppUserRepository appUserRepo;
 	private UserMapper userMapper;
 	private AppRoleRepository  appRoleRepo;
+	private FileInfoService fileService;
 	
 	
 	/**
@@ -57,11 +60,12 @@ public class UserServiceImpl implements UserService {
 	 * @param appRoleRepo
 	 */
 	@Autowired
-	public UserServiceImpl(AppUserRepository appUserRepo, UserMapper userMapper, AppRoleRepository appRoleRepo) {
+	public UserServiceImpl(AppUserRepository appUserRepo, UserMapper userMapper, AppRoleRepository appRoleRepo, FileInfoService fileService) {
 		super();
 		this.appUserRepo = appUserRepo;
 		this.userMapper = userMapper;
 		this.appRoleRepo = appRoleRepo;
+		this.fileService = fileService;
 		
 	}
 	
@@ -209,6 +213,8 @@ public class UserServiceImpl implements UserService {
 		
 		
 	}
+
+	
 
 	
 	

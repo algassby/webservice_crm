@@ -54,7 +54,7 @@ public class Organization {
 	@Column(name = "logo")
 	private String logo;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private AppUser user;
 	
 	
