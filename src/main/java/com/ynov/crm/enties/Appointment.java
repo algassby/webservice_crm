@@ -3,15 +3,15 @@
  */
 package com.ynov.crm.enties;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.AllArgsConstructor;
@@ -23,8 +23,8 @@ import lombok.experimental.Accessors;
  * @author gonza
  *
  */
-@Entity(name = "Apointment")
-@Table(name = "Apointment")
+@Entity(name = "Appointment")
+@Table(name = "Appointment")
 
 @Data
 @AllArgsConstructor
@@ -42,8 +42,12 @@ public class Appointment {
 	@Column(name = "label")
 	private String label;
 	
-	@Column(name = "date")
-	private Date date;
+	@Column(name = "date")	
+	private LocalDateTime date;
+	
+	@ManyToOne
+	@JoinColumn(name = "customerId")
+	private Customer customer;
 
 
 }
