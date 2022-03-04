@@ -5,6 +5,7 @@ package com.ynov.crm.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -158,13 +159,16 @@ public class CustomerServiceImpl implements CustomerService {
 		if(!customerRepo.existsById(customerId)) {
 			return new StringBuffer("Not Found Customer").toString();
 		}
+		if(!fileService.existsByFileName(imageName)) {
+			return new StringBuffer("Image doest not Exist").toString();
+		}
 		fileService.deleteFile(imageName);
 		Customer customer = customerRepo.findById(customerId).get();
 		Set<FileInfo> images  = customer.getFileInfos();
 		images.removeIf(image->image.getFileName().equals(imageName));
 		customer.setFileInfos(images);
 		customerRepo.save(customer);
-		return new StringBuffer().append("Failed deleted !").toString(); 
+		return new StringBuffer().append("Delete success !").toString(); 
 	}
 	@Override
 	public Boolean existsById(String customerId) {
@@ -203,19 +207,29 @@ public class CustomerServiceImpl implements CustomerService {
 			return new StringBuffer("Not Found Customer").toString();
 		}
 		
-		Customer customer = customerRepo.findById(customerId).get();
-		Set<FileInfo> images  = customer.getFileInfos();
-		images.forEach(item->{
+		Set<String> imagesStr = new HashSet<>();
+		jsonObjectDto.getImages().stream().forEach(image->{
+			if(fileService.existsByFileName(image)) {
+				imagesStr.add(image);
+			}
 			
 		});
-		jsonObjectDto.getImages().stream().forEach(image->{
+		Customer customer = customerRepo.findById(customerId).get();
+		Set<FileInfo> images  = customer.getFileInfos();
+		
+		if(imagesStr.isEmpty()) {
+			return new StringBuffer().append("Failed deleted files successfully, please verify your images's name!").toString(); 
+		}
+		
+		imagesStr.stream().forEach(image->{
 			fileService.deleteFile(image);
 			images.removeIf(img->img.getFileName().equals(image));
+
 		});
 		
 		customer.setFileInfos(images);
 		customerRepo.save(customer);
-		return new StringBuffer().append("Delete all files successfully !").toString(); 
+		return new StringBuffer().append("Delete files successfully !").toString(); 
 
 	}
 

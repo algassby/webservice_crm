@@ -17,6 +17,7 @@ import com.ynov.crm.enties.FileInfo;
 public interface FileInfoService {
 	public void init();
     public FileInfo save(MultipartFile file);
+    public Boolean existsByFileName(String fileName);
     public byte[] getPhoto(String fileId)throws Exception;
     public String deleteFile(String fileName);
     public Resource load(String filename);

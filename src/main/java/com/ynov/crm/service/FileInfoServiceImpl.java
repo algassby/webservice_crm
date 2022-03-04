@@ -61,9 +61,6 @@ public class FileInfoServiceImpl implements FileInfoService {
 	}
 	@Autowired 
 	ServletContext context;
-	
-//    @Value("${upload.path}")
-//    private String uploadPath;
 
     private final Path root = Paths.get("uploads");
 
@@ -165,5 +162,11 @@ public class FileInfoServiceImpl implements FileInfoService {
 	  public void deleteAll() {
 	    FileSystemUtils.deleteRecursively(root.toFile());
 	  }
+	 
+		@Override
+		public Boolean existsByFileName(String fileName) {
+			return  fileInfoRepository.existsByFileName(fileName);
+		}
+
 	 
 }
