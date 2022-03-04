@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -19,6 +21,7 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 /**
  * 
@@ -32,7 +35,7 @@ import lombok.experimental.Accessors;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@ToString
 @Accessors(chain = true )
 public class Organization {
 	
@@ -54,11 +57,17 @@ public class Organization {
 	@Column(name = "logo")
 	private String logo;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
-	private AppUser user;
+//	@ManyToOne(fetch = FetchType.EAGER)
+//	private AppUser user;
+	@Column(name = "adminId")
+	private String adminId;
+
 	
-	
-	@OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "organization", targetEntity=Customer.class)
+	//@JoinColumn(name = "customer_id")
+//	@JoinTable(name="customers_images", 
+//    joinColumns=@JoinColumn(name="orga_id"), 
+//    inverseJoinColumns=@JoinColumn(name="customer_id"))
 	private Set<Customer> customers = new HashSet<>();
 	
 }

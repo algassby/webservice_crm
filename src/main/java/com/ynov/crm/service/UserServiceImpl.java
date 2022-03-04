@@ -6,6 +6,7 @@ package com.ynov.crm.service;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -93,6 +94,7 @@ public class UserServiceImpl implements UserService {
 	public List<AppUserResponseDto> getAllUsers() {
 		
 		return appUserRepo.findAll().stream().map(user->userMapper.appUserToAppUserResponseDto(user))
+				.sorted(Comparator.comparing(AppUserResponseDto::getLastUpdate).reversed())
 				.collect(Collectors.toList());
 	}
 	

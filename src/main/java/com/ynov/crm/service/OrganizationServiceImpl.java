@@ -17,9 +17,11 @@ import com.ynov.crm.requestdto.OrganizationRequestDto;
 import com.ynov.crm.responsedto.OrganizationResponsDto;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 @Data
 @Service
 @Transactional
+@Slf4j
 public class OrganizationServiceImpl implements OrganizationService{
 	
 	private OrganizationRepository organizationRepository;
@@ -59,6 +61,7 @@ public class OrganizationServiceImpl implements OrganizationService{
 
 	@Override
 	public List<OrganizationResponsDto> findAll() {
+		log.info(organizationRepository.findAll().toString());
 		return (organizationRepository.findAll())
 				.stream()
 				.map(organization -> organisationMapper.OrganisationToOrganizationResponseDto(organization))
@@ -70,7 +73,7 @@ public class OrganizationServiceImpl implements OrganizationService{
 	public OrganizationResponsDto save(OrganizationRequestDto organizationRequestDto) {
 		UserPrinciple user =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Organization organizationSaved = organisationMapper
-				.OrganisationRequestDtoToOrganization(organizationRequestDto).setUser(userRepository.findByUsername(user.getUsername()).get());
+				.OrganisationRequestDtoToOrganization(organizationRequestDto).setAdminId(userRepository.findByUsername(user.getUsername()).get().getUserId());
 		
 		return organisationMapper
 				.OrganisationToOrganizationResponseDto

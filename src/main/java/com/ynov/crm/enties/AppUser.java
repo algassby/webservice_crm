@@ -80,8 +80,11 @@ public class AppUser {
 	@Column(name = "lastUpdate")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;
-	
-	@OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+	@JoinTable(name="users_organizations", 
+    joinColumns=@JoinColumn(name="user_id"), 
+    inverseJoinColumns=@JoinColumn(name="orga_id"))
 	private Set<Organization> organizations = new HashSet<>();
 	
 	public void addRole(AppRole appRole) {

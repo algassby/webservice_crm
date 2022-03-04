@@ -38,7 +38,7 @@ public class OrganizationRestController {
 	
 	
 
-	@GetMapping("/find/{orgaId}")
+	@GetMapping("/{orgaId}")
 	public ResponseEntity<?> findOrganizationById(@Valid @PathVariable String orgaId) {
 
 		if(organizationService.getOrganization(orgaId)!=null) {
