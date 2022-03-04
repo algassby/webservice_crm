@@ -4,10 +4,8 @@
 package com.ynov.crm.restcontroller;
 
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;

@@ -3,6 +3,10 @@
  */
 package com.ynov.crm.responsedto;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.ynov.crm.enties.FileInfo;
 import com.ynov.crm.enties.Organization;
 
 import lombok.AllArgsConstructor;
@@ -14,6 +18,7 @@ import lombok.experimental.Accessors;
  * @author algas
  *
  */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,4 +30,5 @@ public class CustomerResponseDto {
 	private String  lastName;
 	private String  phoneNumer;
 	private Organization organization;
+	private Set<FileInfo> fileInfos =  new HashSet<>();	
 }

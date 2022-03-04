@@ -43,7 +43,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true )
 
-
 public class AppUser {
 	
 	@Id
@@ -82,7 +81,7 @@ public class AppUser {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;
 	
-	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private Set<Organization> organizations = new HashSet<>();
 	
 	public void addRole(AppRole appRole) {
