@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +53,8 @@ public class UserServiceImpl implements UserService {
 	private UserMapper userMapper;
 	private AppRoleRepository  appRoleRepo;
 	private FileInfoService fileService;
+	private String subject;
+	private MailService mailService;
 	
 	
 	/**
@@ -60,12 +63,18 @@ public class UserServiceImpl implements UserService {
 	 * @param appRoleRepo
 	 */
 	@Autowired
-	public UserServiceImpl(AppUserRepository appUserRepo, UserMapper userMapper, AppRoleRepository appRoleRepo, FileInfoService fileService) {
+	public UserServiceImpl(AppUserRepository appUserRepo,
+						   UserMapper userMapper,
+						   AppRoleRepository appRoleRepo,
+						   FileInfoService fileService,
+						   MailService mailService
+						   ) {
 		super();
 		this.appUserRepo = appUserRepo;
 		this.userMapper = userMapper;
 		this.appRoleRepo = appRoleRepo;
 		this.fileService = fileService;
+		this.mailService = mailService;
 		
 	}
 	
@@ -111,13 +120,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public AppUserResponseDto save(AppUserRequestDto userDto) {
-	
+		String text = String.join(" ",
+				"Bonjour ",
+				userDto.getFirstName(),
+				userDto.getLastName().toUpperCase(),
+				"votre compte a bien été créé"
+		);
+
+		this.mailService.sendEmail("Ajout d'un customer", text, userDto.getEmail());
+
 		UserPrinciple currentUser  =  (UserPrinciple) SecurityContextHolder. getContext(). getAuthentication(). getPrincipal();
-		
+
 		log.info(currentUser.toString());
 		AppUser appUser =  userMapper.appUserRequestDtoToAppUser(userDto).setLastUpdate(new Date()).setAdminId(currentUser.getUserId		());
 		Set<AppRole> roles = appUser.getRoles();
-		
+
 		if(userDto.getRoleName()!=null) {
 			if(userDto.getRoleName().isEmpty()) {
 				AppRole role = appRoleRepo.findByRoleName("ROLE_USER");
@@ -127,7 +144,6 @@ public class UserServiceImpl implements UserService {
 			else {
 				roles.add(appRoleRepo.findByRoleName(userDto.getRoleName()));
 			}
-			
 		}
 		else {
 			roles.add(appRoleRepo.findByRoleName("ROLE_USER"));

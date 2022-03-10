@@ -3,11 +3,7 @@
  */
 package com.ynov.crm.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -49,18 +45,27 @@ public class CustomerServiceImpl implements CustomerService {
 	private CustomerMapper customerMapper;
 	private OrganizationRepository organizationRepo;
 	private FileInfoService fileService;
+	private MailService mailService;
 	
 	/**
 	 * @param customerRepo
 	 * @param customerMapper
 	 */
 	@Autowired
-	public CustomerServiceImpl(CustomerRepository customerRepo, CustomerMapper customerMapper, OrganizationRepository organizationRepo, FileInfoService fileService) {
+	public CustomerServiceImpl(CustomerRepository customerRepo,
+							   CustomerMapper customerMapper,
+							   OrganizationRepository organizationRepo,
+							   FileInfoService fileService,
+							   MailService mailService
+							   )
+	{
+
 		super();
 		this.customerRepo = customerRepo;
 		this.customerMapper = customerMapper;
 		this.organizationRepo = organizationRepo;
 		this.fileService = fileService;
+		this.mailService = mailService;
 		this.fileService.init();
 	}
 	@Override
