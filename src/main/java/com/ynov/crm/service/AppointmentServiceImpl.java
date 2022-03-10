@@ -1,8 +1,14 @@
 package com.ynov.crm.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,9 +75,19 @@ public class AppointmentServiceImpl implements AppointmentService{
 	}
 
 	@Override 
-	public List<AppointmentResponseDto> getAppointmentByCustommer(String custommerId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<AppointmentResponseDto> getAppointmentByCustommer(String custommerId,int page) {
+		final int size = 10;
+		Pageable paging = PageRequest.of(page, size);
+		Page<Appointment> pagedResult = appointmentRepository.findAll(paging);
+		if(pagedResult.hasContent()) {
+			return pagedResult
+					.stream()
+					.map(appointment->appointmentMapper.appointmentToApointmentResponseDto(appointment))
+					.collect(Collectors.toList());
+		}
+		else {
+			return new ArrayList<>();
+		}
 	}
 	
 	

@@ -21,6 +21,6 @@ public interface AppointmentService {
 			String apointmentId);
 	public String remove(String apointmentId);
 	public AppointmentResponseDto getAppointment(String appointmentId);
-	public List<AppointmentResponseDto> getAppointmentByCustommer(String custommerId);
+	public List<AppointmentResponseDto> getAppointmentByCustommer(String custommerId, int page);
 
 }
