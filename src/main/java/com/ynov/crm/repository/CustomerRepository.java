@@ -14,5 +14,7 @@ import com.ynov.crm.enties.Customer;
  */
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, String> {
-
+// @Query(value = "select * from Customers c join file_info f on c.customer_id = f.customer_id", nativeQuery = true)
+// List<Customer> findAll();
+	
 }
