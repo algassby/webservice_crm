@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ynov.crm.requestdto.OrganizationRequestDto;
+import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.OrganizationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600, allowedHeaders = "*")
@@ -44,7 +45,7 @@ public class OrganizationRestController {
 		if(organizationService.getOrganization(orgaId)!=null) {
 			return new ResponseEntity<>(organizationService.getOrganization(orgaId),HttpStatus.FOUND);
 		}else {
-			return new ResponseEntity<>("This organization is unknow.",HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new ResponseMessage("This organization is unknow."),HttpStatus.NOT_FOUND);
 		}
 
 	}
@@ -52,14 +53,14 @@ public class OrganizationRestController {
 	@DeleteMapping(value = "/delete/{orgaName}")
 	public ResponseEntity<?> deleteOrganization(@Valid @PathVariable String orgaName) {
 		if (orgaName.isBlank() || orgaName.isEmpty() || orgaName.equals("")) {
-			return new ResponseEntity<>("This name of organization is empty or null.", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new ResponseMessage("This name of organization is empty or null."), HttpStatus.BAD_REQUEST);
 
 		} else if (organizationService.existsByName(orgaName)) {
 			return new ResponseEntity<>(
 					organizationService.remove(organizationService.findByName(orgaName).getOrgaId()), HttpStatus.OK);
 
 		} else {
-			return new ResponseEntity<>("Organization " + orgaName + " is unknow", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new ResponseMessage("Organization " + orgaName + " is unknow"), HttpStatus.NOT_FOUND);
 		}
 
 	}
@@ -68,19 +69,19 @@ public class OrganizationRestController {
 	public ResponseEntity<?> updateOrganization(@Valid @PathVariable String orgaName,
 			@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
 		if (!organizationRequestDto.verifObligatoryField()) {
-			return new ResponseEntity<>("required field not found (name and/or address)",
+			return new ResponseEntity<>(new ResponseMessage("required field not found (name and/or address)"),
 					HttpStatus.BAD_REQUEST);
 		}
     	
 
 		if (orgaName.isBlank() || orgaName.isEmpty() || orgaName.equals("")) {
-			return new ResponseEntity<>("This name of organization is empty or null.", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new ResponseMessage("This name of organization is empty or null."), HttpStatus.BAD_REQUEST);
 
 		} else if (organizationService.existsByName(orgaName)) {
 			return new ResponseEntity<>(organizationService.update(organizationRequestDto, orgaName), HttpStatus.OK);
 
 		} else {
-			return new ResponseEntity<>("This organization is unknow.", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new ResponseMessage("This organization is unknow."), HttpStatus.NOT_FOUND);
 		}
 
 	}

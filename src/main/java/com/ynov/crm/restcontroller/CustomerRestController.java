@@ -92,13 +92,13 @@ public class CustomerRestController {
 	
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> update(@RequestParam(value = "customerId") String customerId) {
-		return new ResponseEntity<>(customerService.delete(customerId), HttpStatus.OK); 
+		return new ResponseEntity<>(new ResponseMessage(customerService.delete(customerId)), HttpStatus.OK); 
 		
 	}
 	@PutMapping("/update/addImage/{customerId}")
 	public ResponseEntity<?> addImageToCustomer(@PathVariable  String customerId, @RequestParam(value = "file") MultipartFile file ) {
 		
-		return new ResponseEntity<>(customerService.addImageToCustomer(customerId, file), HttpStatus.OK) ;
+		return new ResponseEntity<>(new ResponseMessage(customerService.addImageToCustomer(customerId, file)), HttpStatus.OK) ;
 		
 	}
 	@PutMapping("/update/addManyImage/{customerId}")
@@ -106,7 +106,7 @@ public class CustomerRestController {
 		if(files.length==0) {
 			return new ResponseEntity<>(new ResponseMessage("Cannot  Upload images to customer, cause file is empty!"), HttpStatus.BAD_REQUEST); 
 		}
-		return new ResponseEntity<>(customerService.addAllImageToCustomer(customerId, files), HttpStatus.OK); 
+		return new ResponseEntity<>(new ResponseMessage(customerService.addAllImageToCustomer(customerId, files)), HttpStatus.OK); 
 		
 	}
 	
@@ -117,14 +117,14 @@ public class CustomerRestController {
 			return new ResponseEntity<>(new ResponseMessage("Cannot  delete images from customer, cause files list is empty!"), HttpStatus.BAD_REQUEST);
 		}
 		
-		return new ResponseEntity<>(customerService.removeManyImageToCustomer(customerId, jsonRequestDto), HttpStatus.OK); 
+		return new ResponseEntity<>(new ResponseMessage(customerService.removeManyImageToCustomer(customerId, jsonRequestDto)), HttpStatus.OK); 
 		
 	}
 	
 	@PutMapping("/update/removeImage/{customerId}")
 	public ResponseEntity<?> addImageToCustomer(@PathVariable  String customerId, @RequestParam(value = "imageName") String imageName) {
 		
-		return new ResponseEntity<>(customerService.removeImageToCustomer(customerId, imageName), HttpStatus.OK); 
+		return new ResponseEntity<>(new ResponseMessage(customerService.removeImageToCustomer(customerId, imageName)), HttpStatus.OK); 
 		
 	}
 	

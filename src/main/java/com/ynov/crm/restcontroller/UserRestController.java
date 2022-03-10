@@ -66,14 +66,14 @@ public class UserRestController {
 	@GetMapping("/email/{email}")
 	ResponseEntity<?> findByEmail(@PathVariable String email) {
 		if(email==null || email.isEmpty()) {
-			return new ResponseEntity<>("Wrong or empty email",HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new ResponseMessage("Wrong or empty email"), HttpStatus.BAD_REQUEST);
 		}
 		else {
 			if(userService.existsByEmail(email)) {
-				return new ResponseEntity<>(userService.findByEmail(email),HttpStatus.FOUND);
+				return new ResponseEntity<>(userService.findByEmail(email), HttpStatus.FOUND);
 			}
 			else  {
-				return new ResponseEntity<>("User not found",HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus.NOT_FOUND);
 			}
 		}
 		
@@ -82,14 +82,14 @@ public class UserRestController {
 	@GetMapping("/username/{username}")
 	ResponseEntity<?> findByUsername(@PathVariable String username){
 		if(username == null) {
-			return new ResponseEntity<>("Wrong or empty username",HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new ResponseMessage("Wrong or empty username"),HttpStatus.BAD_REQUEST);
 		}
 		else {
 			if(userService.existsByUsername(username)) {
 				return new ResponseEntity<>(userService.findByUsername(username),HttpStatus.BAD_REQUEST);
 			}
 			else  {
-				return new ResponseEntity<>("User not found",HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus.BAD_REQUEST);
 			}
 		}
 		
@@ -97,14 +97,14 @@ public class UserRestController {
 	@GetMapping("/userid/{userId}")
 	ResponseEntity<?> getUser(@PathVariable String userId){
 		if(userId==null || userId.isEmpty()) {
-			return new ResponseEntity<>("Wrong or empty username",HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new ResponseMessage("Wrong or empty username"), HttpStatus.BAD_REQUEST);
 		}
 		else {
 			if(userService.existsById(userId)) {
-				return new ResponseEntity<>(userService.getUser(userId),HttpStatus.FOUND);
+				return new ResponseEntity<>(userService.getUser(userId), HttpStatus.FOUND);
 			}
 			else  {
-				return new ResponseEntity<>("User not found",HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus.NOT_FOUND);
 			}
 		}
 	}
@@ -123,9 +123,9 @@ public class UserRestController {
 			return new ResponseEntity<>(new ResponseMessage("User already taken"),HttpStatus.BAD_REQUEST);
 		}
 		if (userService.save(userDto) != null){
-			return new ResponseEntity<>("L'administrateur a été ajouté", HttpStatus.OK);
+			return new ResponseEntity<>(new ResponseMessage("L'administrateur a été ajouté avec succès!"), HttpStatus.OK);
 		}
-		return  new ResponseEntity<>("Erreur lors de l'ajout de l'administrateur",HttpStatus.EXPECTATION_FAILED);
+		return  new ResponseEntity<>(new ResponseMessage("Erreur lors de l'ajout de l'administrateur."), HttpStatus.EXPECTATION_FAILED);
 	}
 	
 	@PutMapping("/update")
