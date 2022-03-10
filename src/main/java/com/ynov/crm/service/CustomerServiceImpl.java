@@ -67,12 +67,16 @@ public class CustomerServiceImpl implements CustomerService {
 	public List<CustomerResponseDto> getAllCustomer(Integer pageNo, Integer pageSize,
 			String sortBy) {
 		Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
-		log.debug(customerRepo.findAll().toString());
+//		log.debug(customerRepo.findAll().toString());
 		Page<Customer> pagedResult = customerRepo.findAll(paging);
 		if(pagedResult.hasContent()) {
 			return customerRepo.findAll()
 					.stream()
-					.map(customer->customerMapper.customerToCustomerResponseDto(customer))
+					.map(customer->{
+						CustomerResponseDto customerResponse = customerMapper.customerToCustomerResponseDto(customer);
+					
+						return customerResponse;
+					})
 					.collect(Collectors.toList());
 		}
 		else {
@@ -231,6 +235,14 @@ public class CustomerServiceImpl implements CustomerService {
 		customerRepo.save(customer);
 		return new StringBuffer().append("Delete files successfully !").toString(); 
 
+	}
+	@Override
+	public List<CustomerResponseDto> findByOrganization(String organizationId) {
+		
+		return customerRepo.findByOrganization(organizationId)
+				.stream()
+				.map(customer->customerMapper.customerToCustomerResponseDto(customer))
+				.collect(Collectors.toList());
 	}
 
 	

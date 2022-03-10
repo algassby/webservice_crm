@@ -52,6 +52,10 @@ public class CustomerRestController {
 		return new ResponseEntity<>(customerService.getAllCustomer(pageNo, pageSize, sortBy), HttpStatus.OK);
 		
 	}
+	@GetMapping("/findbyOragnizationId")
+	public ResponseEntity<?> findByOrganization (@RequestParam String orgnizationId){
+		return ResponseEntity.ok().body(customerService.findByOrganization(orgnizationId));
+	}
 	@GetMapping("/{customerId}")
 	public ResponseEntity<?> getCustomer(@PathVariable String customerId) {
 		if(customerId ==null) {

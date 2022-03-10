@@ -16,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.AllArgsConstructor;
@@ -62,9 +64,12 @@ public class Organization {
 	@Column(name = "adminId")
 	private String adminId;
 
+
+
 	
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "organization", targetEntity=Customer.class)
-	//@JoinColumn(name = "customer_id")
+	@Fetch(FetchMode.JOIN)
+	//@JoinColumn(name = "orga_id", referencedColumnName = "customer_id")
 //	@JoinTable(name="customers_images", 
 //    joinColumns=@JoinColumn(name="orga_id"), 
 //    inverseJoinColumns=@JoinColumn(name="customer_id"))

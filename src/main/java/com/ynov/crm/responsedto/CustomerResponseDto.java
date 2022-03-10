@@ -6,6 +6,8 @@ package com.ynov.crm.responsedto;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.ynov.crm.enties.FileInfo;
 import com.ynov.crm.enties.Organization;
 
@@ -29,6 +31,8 @@ public class CustomerResponseDto {
 	private String  firstName;
 	private String  lastName;
 	private String  phoneNumer;
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private Organization organization;
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private Set<FileInfo> fileInfos =  new HashSet<>();	
 }

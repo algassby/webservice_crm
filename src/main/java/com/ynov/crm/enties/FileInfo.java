@@ -9,7 +9,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -49,9 +51,11 @@ public class FileInfo {
 	private String fileName;
 	@Column(name = "fileUrl")
 	private String fileUrl;
-	//@ManyToOne(fetch = FetchType.LAZY)
-   // @JoinColumn(name = "customerId")
-	//private Customer customer;
+	@ManyToOne(cascade = CascadeType.PERSIST , fetch = FetchType.LAZY)
+	  @JoinTable(name="customers_images", 
+    joinColumns=@JoinColumn(name="file_id"), 
+    inverseJoinColumns=@JoinColumn(name="customer_id"))
+	private Customer customer;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;
