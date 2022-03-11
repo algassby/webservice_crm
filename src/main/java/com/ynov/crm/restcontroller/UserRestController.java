@@ -173,7 +173,7 @@ public class UserRestController {
 	}
 	
 	@GetMapping("/pages")
-	public ResponseEntity<?> getAllEmploye(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "10")
+	public ResponseEntity<?> getAllUsers(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "10")
 		Integer pageSize, @RequestParam(defaultValue = "lastUpdate")  String sortBy) {
 
         return new ResponseEntity<>(userService.findAllUsersByPaging(pageNo, pageSize, sortBy),HttpStatus.OK);

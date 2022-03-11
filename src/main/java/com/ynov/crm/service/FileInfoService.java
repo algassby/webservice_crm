@@ -20,10 +20,12 @@ import com.ynov.crm.responsedto.FileInfoResponseDto;
  */
 public interface FileInfoService {
 	public void init();
-    public FileInfo save(MultipartFile file);
+    public FileInfo save(MultipartFile file, String customerId);
+    public FileInfo getFile(String fileId);
     public Boolean existsByFileName(String fileName);
     public byte[] getPhoto(String fileId)throws Exception;
     public String deleteFile(String fileName);
+    public String deleteFileWithUser(String fileName);
     public Resource load(String filename);
     public Stream<Path> loadAll();
     public void deleteAll();

@@ -62,6 +62,7 @@ public class AppUser {
 	private  String email;
 	
 	@Column(name = "username", length = 60)
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private  String username;
 	
 	@JsonProperty(access = Access.WRITE_ONLY)
