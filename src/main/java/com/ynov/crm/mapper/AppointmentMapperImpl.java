@@ -23,9 +23,10 @@ public class AppointmentMapperImpl implements AppointmentMapper {
         appointmentResponseDto.setApointId( appointment.getApointId() );
         appointmentResponseDto.setLabel( appointment.getLabel() );
         if ( appointment.getDate() != null ) {
-            appointmentResponseDto.setDate( Date.from( appointment.getDate().toInstant( ZoneOffset.UTC ) ) );
+            appointmentResponseDto.setDate(appointment.getDate());
         }
         appointmentResponseDto.setCustomerId(appointment.getCustomer().getCustomerId());
+        appointmentResponseDto.setPlace(appointment.getPlace());
         return appointmentResponseDto;
     }
 
@@ -38,6 +39,7 @@ public class AppointmentMapperImpl implements AppointmentMapper {
         Appointment appointment = new Appointment();
 
         appointment.setLabel( appointmentRequestDto.getLabel() );
+        appointment.setPlace(appointmentRequestDto.getPlace());
         if ( appointmentRequestDto.getDate() != null ) {
             appointment.setDate(appointmentRequestDto.getDate());
         }

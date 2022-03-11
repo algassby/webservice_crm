@@ -4,6 +4,7 @@
 package com.ynov.crm.enties;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 import javax.persistence.Column;
@@ -13,7 +14,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,7 +48,10 @@ public class Appointment {
 	private String label;
 	
 	@Column(name = "date")	
-	private LocalDateTime date;
+	private Date date;
+	
+	@Column(name="place")
+	private String place;
 	
 	@ManyToOne
 	@JoinColumn(name = "customerId")

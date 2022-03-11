@@ -1,7 +1,13 @@
 package com.ynov.crm.service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ynov.crm.enties.Appointment;
-import com.ynov.crm.enties.Customer;
 import com.ynov.crm.mapper.AppointmentMapper;
 import com.ynov.crm.repository.AppointmentRepository;
 import com.ynov.crm.repository.CustomerRepository;
@@ -44,15 +49,32 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public AppointmentResponseDto save(AppointmentRequestDto appointmentRequestDto) {
+	public ResponseEntity<Object> save(AppointmentRequestDto appointmentRequestDto) {
 		// TODO doit retourner un simple ok et pas l'objet en question
-		Appointment appointment = appointmentMapper.appointmentRequestDtoToAppointment(appointmentRequestDto);
-		if (appointmentRequestDto.getCustomerId() != null) {
-			appointment.setCustomer(customerRepository.findById(appointmentRequestDto.getCustomerId()).get());
-		} else {
-			log.error("customer not found");
+		// TODO tester les champs surtout date 
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+
+		Set<ConstraintViolation<AppointmentRequestDto>> violations = validator.validate(appointmentRequestDto);
+		for (ConstraintViolation<AppointmentRequestDto> violation : violations) {
+			log.error("erreur : {}",violation.getMessageTemplate());
+			if (!violations.isEmpty()) {
+				return new ResponseEntity<>(violation.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+			}
 		}
-		return appointmentMapper.appointmentToApointmentResponseDto(appointmentRepository.save(appointment));
+
+		Appointment appointment = appointmentMapper.appointmentRequestDtoToAppointment(appointmentRequestDto);
+
+		if (customerRepository.existsById(appointmentRequestDto.getCustomerId())) {
+			appointment.setCustomer(customerRepository.findById(appointmentRequestDto.getCustomerId()).get());
+
+			return new ResponseEntity<>(
+					appointmentMapper.appointmentToApointmentResponseDto(appointmentRepository.save(appointment)),
+					HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>("customer id not found", HttpStatus.BAD_REQUEST);
+
+		}
 
 	}
 
@@ -68,8 +90,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				// TODO si champs ok
 				appointment.setDate(appointmentRequestDto.getDate()).setLabel(appointmentRequestDto.getLabel());
 				appointmentRepository.save(appointment);
-				return new ResponseEntity<>(new ResponseMessage("appointment modify"),
-						HttpStatus.CREATED);
+				return new ResponseEntity<>(new ResponseMessage("appointment modify"), HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>("customer id not found", HttpStatus.NOT_ACCEPTABLE);
 			}
@@ -77,19 +98,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 		} else {
 			return new ResponseEntity<>(new ResponseMessage("appointment id not found "), HttpStatus.BAD_REQUEST);
 		}
-		
+
 	}
 
 	@Override
 	public ResponseEntity<Object> remove(String appointmentId) {
-		log.info("appointmentId found : {}",appointmentRepository.existsById(appointmentId));
-		
+		log.info("appointmentId found : {}", appointmentRepository.existsById(appointmentId));
+
 		if (appointmentRepository.existsById(appointmentId)) {
-			
+
 			appointmentRepository.deleteById(appointmentId);
 			return new ResponseEntity<>(new ResponseMessage("appointment delete."), HttpStatus.OK);
-			
-		}else {
+
+		} else {
 			return new ResponseEntity<>(new ResponseMessage("unknow id appointment."), HttpStatus.NOT_FOUND);
 		}
 	}
@@ -107,7 +128,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public ResponseEntity<Object> getAppointmentByCustommer(String custommerId, int page) {
-		log.info("customer found : {}",customerRepository.existsById(custommerId));
+		log.info("customer found : {}", customerRepository.existsById(custommerId));
 		if (customerRepository.existsById(custommerId)) {
 			final int size = 10;
 			Pageable paging = PageRequest.of(page, size);
@@ -120,8 +141,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else {
 				return new ResponseEntity<>(new ResponseMessage("unknow page."), HttpStatus.BAD_REQUEST);
 			}
-		}else {
-			return new ResponseEntity<>(new ResponseMessage("customer id unknow."), HttpStatus.BAD_REQUEST); 
+		} else {
+			return new ResponseEntity<>(new ResponseMessage("customer id unknow."), HttpStatus.BAD_REQUEST);
 		}
 	}
 

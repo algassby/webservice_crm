@@ -32,42 +32,31 @@ public class ApointmentRestController {
 	private AppointmentService appointmentService;
 
 	@PostMapping("/save")
-	public ResponseEntity<?> saveAppointment(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto) {
-		// TODO tester les champs surtout date
-		return new ResponseEntity<>(appointmentService.save(appointmentRequestDto), HttpStatus.CREATED);
+	public ResponseEntity<?> saveAppointment(@RequestBody AppointmentRequestDto appointmentRequestDto) {
+		return appointmentService.save(appointmentRequestDto);
 	}
-	
 
 	@PutMapping("/update/{appointmentId}")
-	public ResponseEntity<?> update(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto, @PathVariable String appointmentId) {
-		return appointmentService.update(appointmentRequestDto, appointmentId); 
+	public ResponseEntity<?> update(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto,
+			@PathVariable String appointmentId) {
+		return appointmentService.update(appointmentRequestDto, appointmentId);
 	}
-	
-	
+
 	@DeleteMapping("/delete/{appointmentId}")
 	public ResponseEntity<?> update(@Valid @PathVariable String appointmentId) {
-		return appointmentService.remove(appointmentId); 
-		
+		return appointmentService.remove(appointmentId);
+
 	}
 
 	@GetMapping("/find/{appointmentId}")
 	public ResponseEntity<?> findAppointmentById(@Valid @PathVariable String appointmentId) {
-		//TODO si id existe pas
 		return appointmentService.getAppointment(appointmentId);
 	}
 
 	@GetMapping("/find/customer/{customerId}")
 	public ResponseEntity<?> findAppointmentByCustomer(@Valid @PathVariable String customerId,@Valid @RequestParam int page) {
-
-		if (appointmentService.getAppointment(customerId) != null) {
-			return new ResponseEntity<>(appointmentService.getAppointmentByCustommer(customerId, page),
-					HttpStatus.FOUND);
-		} else {
-			return new ResponseEntity<>("This customer is unknow.", HttpStatus.NOT_FOUND);
-		}
-
+		return appointmentService.getAppointmentByCustommer(customerId, page);
+				
 	}
-	
-	
 
 }

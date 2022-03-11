@@ -19,5 +19,6 @@ public class AppointmentResponseDto {
 	private String  label;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm", timezone = "GMT+1")	
 	private Date date;
+	private String place;
 	private String customerId;
 }

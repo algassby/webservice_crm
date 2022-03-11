@@ -2,6 +2,10 @@ package com.ynov.crm.requestdto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import org.springframework.lang.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -15,10 +19,19 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class AppointmentRequestDto {
 	
+	@NotNull(message="label cannot null")
+	@NotBlank(message="label cannot null")
 	private String label;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")	
+	
+	@NotNull(message="date cannot null")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
 	private LocalDateTime date;
-
+	
+	@Nullable
+	private String place; 
+	
+	@NotNull(message="customerId cannot null")
+	@NotBlank(message="customerId cannot null")
 	private String customerId;
 
 
