@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,8 +38,8 @@ public class FileRestController {
 	public ResponseEntity<?> findAllFile() {
 		return new ResponseEntity<>(fileInfoService.findAllFile(), HttpStatus.OK);
 	}
-	@GetMapping("/customer")
-	public ResponseEntity<?> findAllFileByCustomerId(@RequestParam(value = "customerId", required = false) String customerId) {
+	@GetMapping("/{customerId}")
+	public ResponseEntity<?> findAllFileByCustomerId(@PathVariable String customerId) {
 		return new ResponseEntity<>(fileInfoService.findAllFileByCustomer(customerId), HttpStatus.OK);
 	}
 	

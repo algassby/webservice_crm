@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.ynov.crm.enties.AppRole;
 import com.ynov.crm.enties.AppUser;
-import com.ynov.crm.enties.FileInfo;
 import com.ynov.crm.mapper.UserMapper;
 import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
@@ -34,9 +31,6 @@ import com.ynov.crm.responsedto.AppUserResponseDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-
-
 
 
 /**
@@ -55,8 +49,13 @@ public class UserServiceImpl implements UserService {
 	private UserMapper userMapper;
 	private AppRoleRepository  appRoleRepo;
 	private FileInfoService fileService;
+	private UserPrinciple currentUser;
+
 	@Autowired
 	private PasswordEncoder encoder;
+
+	@Value("${crm.superAdmin}")
+	private String superAdmin;
 	
 	
 	/**
@@ -71,7 +70,14 @@ public class UserServiceImpl implements UserService {
 		this.userMapper = userMapper;
 		this.appRoleRepo = appRoleRepo;
 		this.fileService = fileService;
-		
+	
+	
+	}
+	/**
+	 * init current user
+	 */
+	public void initCurrentUser(){
+		 currentUser  =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication(). getPrincipal();
 	}
 	
 	@Override
@@ -86,15 +92,22 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public AppUserResponseDto getUser(String userId) {
-		
 	    return userMapper.appUserToAppUserResponseDto(appUserRepo.findById(userId).get());
 	}
 
 	@Override
 	public List<AppUserResponseDto> getAllUsers() {
-		
+		this.initCurrentUser();
+		log.debug(currentUser.toString());
+		log.debug(String.valueOf(this.currentUser.getUsername().equals(getSuperAdmin())));
+		if(this.currentUser.getUsername().equals(getSuperAdmin())) {
+			return appUserRepo.findAll().stream().map(user->userMapper.appUserToAppUserResponseDto(user))
+					.sorted(Comparator.comparing(AppUserResponseDto::getLastUpdate).reversed())
+					.collect(Collectors.toList());
+		}
 		return appUserRepo.findAll().stream().map(user->userMapper.appUserToAppUserResponseDto(user))
 				.sorted(Comparator.comparing(AppUserResponseDto::getLastUpdate).reversed())
+				.filter(user->user.getUsername().equals(this.currentUser.getUsername()))
 				.collect(Collectors.toList());
 	}
 	
@@ -120,7 +133,7 @@ public class UserServiceImpl implements UserService {
 	public AppUserResponseDto save(AppUserRequestDto userDto) {
 
 
-		UserPrinciple currentUser  =  (UserPrinciple) SecurityContextHolder. getContext(). getAuthentication(). getPrincipal();
+		UserPrinciple currentUser  =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication(). getPrincipal();
 		log.info(currentUser.toString());
 		AppUser appUser =  userMapper.appUserRequestDtoToAppUser(userDto).setLastUpdate(new Date()).setAdminId(currentUser.getUserId()).setPassword(encoder.encode(userDto.getPassword()));
 

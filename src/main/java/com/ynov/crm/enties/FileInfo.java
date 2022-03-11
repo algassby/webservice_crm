@@ -52,9 +52,11 @@ public class FileInfo {
 	@Column(name = "fileUrl")
 	private String fileUrl;
 	@ManyToOne(cascade = CascadeType.PERSIST , fetch = FetchType.LAZY)
-	  @JoinTable(name="customers_images", 
-    joinColumns=@JoinColumn(name="file_id"), 
-    inverseJoinColumns=@JoinColumn(name="customer_id"))
+	@JoinColumn(name = "customerId", nullable = true)
+//	  @JoinTable(name="customers_images", 
+//    joinColumns=@JoinColumn(name="file_id"), 
+//    inverseJoinColumns=@JoinColumn(name="customer_id"))
+	
 	private Customer customer;
 	
 	@Temporal(TemporalType.TIMESTAMP)

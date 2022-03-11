@@ -35,6 +35,7 @@ import com.ynov.crm.enties.Customer;
 import com.ynov.crm.enties.FileInfo;
 import com.ynov.crm.exception.FileUploadException;
 import com.ynov.crm.mapper.FileInfoMapper;
+import com.ynov.crm.repository.CustomerRepository;
 import com.ynov.crm.repository.FileInfoRepository;
 import com.ynov.crm.responsedto.FileInfoResponseDto;
 
@@ -57,15 +58,17 @@ public class FileInfoServiceImpl implements FileInfoService {
 
 	private FileInfoRepository fileInfoRepository;
 	private FileInfoMapper fileInfoMapper;
+	private CustomerRepository customerRepo;
 	
 	/**
 	 * @param fileInfoRepository
 	 */
 	@Autowired
-	public FileInfoServiceImpl(FileInfoRepository fileInfoRepository, FileInfoMapper fileInfoMapper) {
+	public FileInfoServiceImpl(FileInfoRepository fileInfoRepository, FileInfoMapper fileInfoMapper, CustomerRepository customerRepo) {
 		super();
 		this.fileInfoRepository = fileInfoRepository;
 		this.fileInfoMapper  = fileInfoMapper;
+		this.customerRepo = customerRepo;
 	}
 	@Autowired 
 	ServletContext context;
@@ -86,8 +89,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
     
     private Logger logger = LoggerFactory.getLogger(FileInfoServiceImpl.class);
-    public FileInfo save(MultipartFile file) throws FileUploadException {
-    	
+    public FileInfo save(MultipartFile file, String customerId) throws FileUploadException {
+    	Customer customer = customerRepo.findById(customerId).get();
         try {
         	FileInfo fileInfo = new FileInfo();
             Path resolve = root.resolve(file.getOriginalFilename());
@@ -106,6 +109,7 @@ public class FileInfoServiceImpl implements FileInfoService {
             fileInfo.setFileName(resolve.getFileName().toString());
         	fileInfo.setFileUrl(resolve.toString());
         	fileInfo.setLastUpdate(new Date());
+        	fileInfo.setCustomer(customer);
         	//fileInfo.setCustomer(customer);
         	fileInfoRepository.save(fileInfo);
         	logger.info(fileInfo.toString());
@@ -160,12 +164,30 @@ public class FileInfoServiceImpl implements FileInfoService {
 		 logger.info(String.join(" "," Path =", path.toString()));
 	        try {
 	            // Delete file or directory
-	        	if(!fileName.isEmpty() || fileName!=null) {
-	        		fileInfoRepository.deleteById(fileInfoRepository.findByFileName(fileName).getFileId());
+	        		Files.delete(path);
+
+	        } catch (NoSuchFileException ex) {
+	            System.out.printf("No such file or directory: %s\n", path);
+	        } catch (DirectoryNotEmptyException ex) {
+	            System.out.printf("Directory %s is not empty\n", path);
+	        } catch (IOException ex) {
+	            System.out.println(ex);
+	        }
+			return String.join(" ","Suppression de l'image", fileName, "reussie avec succès!");
+	}
+	@Override
+	public String deleteFileWithUser(String fileName) {
+		log.info(root.toString());
+		 Path path = Paths.get(String.join("", root.toString(),new StringBuilder().append(File.separatorChar).append(fileName).toString()));
+		
+		 logger.info(String.join(" "," Path =", path.toString()));
+	        try {
+	            // Delete file or directory
+	        	FileInfo fileInfo = fileInfoRepository.findByFileName(fileName);
+	        		fileInfo.setCustomer(null);
+	        		fileInfoRepository.deleteById(fileInfo.getFileId());
 	        		Files.delete(path);
 	        		
-	        	}
-	            
 	        } catch (NoSuchFileException ex) {
 	            System.out.printf("No such file or directory: %s\n", path);
 	        } catch (DirectoryNotEmptyException ex) {
@@ -206,6 +228,10 @@ public class FileInfoServiceImpl implements FileInfoService {
 					 .map(image->fileInfoMapper.fileInfoToFileInfoResponseDto(image))
 					 .collect(Collectors.toList());
 				
+		}
+		@Override
+		public FileInfo getFile(String fileId) {
+			return fileInfoRepository.findById(fileId).get();
 		}
 
 }
