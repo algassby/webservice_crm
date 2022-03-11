@@ -37,13 +37,13 @@ public class ApointmentRestController {
 
 		return new ResponseEntity<>(appointmentService.save(appointmentRequestDto), HttpStatus.CREATED);
 	}
-//	//TODO à faire
-//	@PutMapping("/update/{customerId}")
-//	public ResponseEntity<?> update(@RequestBody CustomerRequestDto customerRequestDto, @PathVariable String customerId) {
-//		return new ResponseEntity<>(customerService.update(customerRequestDto, customerId), HttpStatus.OK); 
-//		
-//	}
-//	
+	
+
+	@PutMapping("/update/{appointmentId}")
+	public ResponseEntity<?> update(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto, @PathVariable String appointmentId) {
+		return appointmentService.update(appointmentRequestDto, appointmentId); 
+	}
+	
 //	//TODO à faire
 //	@DeleteMapping("/delete")
 //	public ResponseEntity<?> update(@RequestParam(value = "customerId") String customerId) {
@@ -53,16 +53,13 @@ public class ApointmentRestController {
 
 	@GetMapping("/find/{appointmentId}")
 	public ResponseEntity<?> findAppointmentById(@Valid @PathVariable String appointmentId) {
-
-		if (appointmentService.getAppointment(appointmentId) != null) {
-			return new ResponseEntity<>(appointmentService.getAppointment(appointmentId), HttpStatus.FOUND);
-		} else {
-			return new ResponseEntity<>("This appointment is unknow.", HttpStatus.NOT_FOUND);
-		}
+//TODO si id existe pas
+		
+		return appointmentService.getAppointment(appointmentId);
 	}
 
-	@GetMapping("/find/customer/{customerId}/{page}")
-	public ResponseEntity<?> findAppointmentByCustomer(@Valid @PathVariable String customerId, @PathVariable int page) {
+	@GetMapping("/find/customer/{customerId}")
+	public ResponseEntity<?> findAppointmentByCustomer(@Valid @PathVariable String customerId,@Valid @RequestParam int page) {
 
 		if (appointmentService.getAppointment(customerId) != null) {
 			return new ResponseEntity<>(appointmentService.getAppointmentByCustommer(customerId, page),

@@ -1,6 +1,6 @@
 package com.ynov.crm.requestdto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -17,7 +17,7 @@ public class AppointmentRequestDto {
 	
 	private String label;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")	
-	private Date date;
+	private LocalDateTime date;
 
 	private String customerId;
 

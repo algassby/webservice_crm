@@ -1,7 +1,5 @@
 package com.ynov.crm.mapper;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 
@@ -41,7 +39,7 @@ public class AppointmentMapperImpl implements AppointmentMapper {
 
         appointment.setLabel( appointmentRequestDto.getLabel() );
         if ( appointmentRequestDto.getDate() != null ) {
-            appointment.setDate( LocalDateTime.ofInstant( appointmentRequestDto.getDate().toInstant(), ZoneId.of( "UTC" ) ) );
+            appointment.setDate(appointmentRequestDto.getDate());
         }
 
         return appointment;
