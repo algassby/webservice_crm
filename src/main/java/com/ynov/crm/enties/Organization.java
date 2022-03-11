@@ -59,14 +59,15 @@ public class Organization {
 	@Column(name = "logo")
 	private String logo;
 	
-//	@ManyToOne(fetch = FetchType.EAGER)
-//	private AppUser user;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinTable(name="users_organizations", 
+		    joinColumns=@JoinColumn(name="orga_id"), 
+		    inverseJoinColumns=@JoinColumn(name="user_id"))
+	private AppUser appUser;
+	
 	@Column(name = "adminId")
 	private String adminId;
 
-
-
-	
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "organization", targetEntity=Customer.class)
 	@Fetch(FetchMode.JOIN)
 	//@JoinColumn(name = "orga_id", referencedColumnName = "customer_id")

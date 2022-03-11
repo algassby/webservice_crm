@@ -5,6 +5,7 @@ package com.ynov.crm.enties;
 
 
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -80,12 +81,26 @@ public class Customer implements Serializable {
 	@JoinColumn(name = "orga_id", nullable = true)
 	private Organization organization;
 	
-	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.EAGER)
-	  @JoinTable(name="customers_images", 
-      joinColumns=@JoinColumn(name="customer_id"), 
-      inverseJoinColumns=@JoinColumn(name="file_id"))
+	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "customer")
+//	@JoinTable(name="customers_images", 
+//		    joinColumns=@JoinColumn(name="customer_id"), 
+//		    inverseJoinColumns=@JoinColumn(name="file_id"))
 	private Set<FileInfo> fileInfos =  new HashSet<>();
 	
 	
+	 public Customer removeImage(FileInfo fileInfo)
+     {
+          fileInfos.remove(fileInfo);
+          fileInfo.setCustomer(null);
+          return this;
+     }
+	 public Customer removeAllImage(Set<FileInfo> fileInos)
+     {
+          fileInfos.removeAll(fileInos);
+          fileInos.forEach(image->{
+        	  image.setCustomer(null);
+          });
+          return this;
+     }
 	
 }

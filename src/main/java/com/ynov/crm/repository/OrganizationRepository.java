@@ -11,8 +11,8 @@ import com.ynov.crm.enties.Organization;
 
 @Repository
 public interface OrganizationRepository extends JpaRepository<Organization, String>{
-	@Query(value = "select * from organization", nativeQuery = true)
-	public List<Organization> findAll();
+//	//@Query(value = "select * from organization", nativeQuery = true)
+//	public List<Organization> findAll();
 	public Boolean existsByName(String name);
 	public Organization findByName(String name);
 }

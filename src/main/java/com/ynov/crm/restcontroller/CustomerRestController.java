@@ -77,7 +77,7 @@ public class CustomerRestController {
 		
 	}
 	
-	@PutMapping("/update/{customerId}")
+	@PutMapping("/{customerId}/update")
 	public ResponseEntity<?> update(@RequestBody CustomerRequestDto customerRequestDto, @PathVariable String customerId) {
 		if(customerId ==null) {
 			return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus. NOT_FOUND); 
@@ -90,18 +90,13 @@ public class CustomerRestController {
 		
 	}
 	
-	@DeleteMapping("/delete")
-	public ResponseEntity<?> update(@RequestParam(value = "customerId") String customerId) {
+	@DeleteMapping("/{customerId}/delete")
+	public ResponseEntity<?> update(@PathVariable String customerId) {
 		return new ResponseEntity<>(new ResponseMessage(customerService.delete(customerId)), HttpStatus.OK); 
 		
 	}
-	@PutMapping("/update/addImage/{customerId}")
-	public ResponseEntity<?> addImageToCustomer(@PathVariable  String customerId, @RequestParam(value = "file") MultipartFile file ) {
-		
-		return new ResponseEntity<>(new ResponseMessage(customerService.addImageToCustomer(customerId, file)), HttpStatus.OK) ;
-		
-	}
-	@PutMapping("/update/addManyImage/{customerId}")
+	
+	@PutMapping("/update/{customerId}/images/save")
 	public ResponseEntity<?> addManyImage(@PathVariable  String customerId, @RequestParam(value = "files") MultipartFile files []) {
 		if(files.length==0) {
 			return new ResponseEntity<>(new ResponseMessage("Cannot  Upload images to customer, cause file is empty!"), HttpStatus.BAD_REQUEST); 
@@ -111,7 +106,7 @@ public class CustomerRestController {
 	}
 	
 	
-	@PutMapping("/update/deleteManyImage/{customerId}")
+	@PutMapping("/update/{customerId}/images/delete")
 	public ResponseEntity<?> removeManyImageToCustomer(@PathVariable  String customerId, @RequestBody JsonObjectDto jsonRequestDto) {
 		if(jsonRequestDto.getImages().isEmpty()) {
 			return new ResponseEntity<>(new ResponseMessage("Cannot  delete images from customer, cause files list is empty!"), HttpStatus.BAD_REQUEST);
@@ -121,12 +116,7 @@ public class CustomerRestController {
 		
 	}
 	
-	@PutMapping("/update/removeImage/{customerId}")
-	public ResponseEntity<?> addImageToCustomer(@PathVariable  String customerId, @RequestParam(value = "imageName") String imageName) {
-		
-		return new ResponseEntity<>(new ResponseMessage(customerService.removeImageToCustomer(customerId, imageName)), HttpStatus.OK); 
-		
-	}
+	
 	
 	
 }
