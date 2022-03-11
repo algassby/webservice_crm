@@ -34,7 +34,6 @@ public class ApointmentRestController {
 	@PostMapping("/save")
 	public ResponseEntity<?> saveAppointment(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto) {
 		// TODO tester les champs surtout date
-
 		return new ResponseEntity<>(appointmentService.save(appointmentRequestDto), HttpStatus.CREATED);
 	}
 	
@@ -44,17 +43,16 @@ public class ApointmentRestController {
 		return appointmentService.update(appointmentRequestDto, appointmentId); 
 	}
 	
-//	//TODO à faire
-//	@DeleteMapping("/delete")
-//	public ResponseEntity<?> update(@RequestParam(value = "customerId") String customerId) {
-//		return new ResponseEntity<>(customerService.delete(customerId), HttpStatus.OK); 
-//		
-//	}
+	
+	@DeleteMapping("/delete/{appointmentId}")
+	public ResponseEntity<?> update(@Valid @PathVariable String appointmentId) {
+		return appointmentService.remove(appointmentId); 
+		
+	}
 
 	@GetMapping("/find/{appointmentId}")
 	public ResponseEntity<?> findAppointmentById(@Valid @PathVariable String appointmentId) {
-//TODO si id existe pas
-		
+		//TODO si id existe pas
 		return appointmentService.getAppointment(appointmentId);
 	}
 

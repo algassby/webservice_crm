@@ -81,29 +81,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public String remove(String apointmentId) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseEntity<Object> remove(String appointmentId) {
+		log.info("appointmentId found : {}",appointmentRepository.existsById(appointmentId));
 		
-//		if(customerId==null) {
-//			 return new StringBuffer("Not Found Customer").toString();
-//		}
-//		
-//		if(customerRepo.existsById(customerId)) {
-//			Customer customer = customerRepo.findById(customerId).get();
-//			customer.getFileInfos().stream().forEach(file->{
-//				fileService.deleteFile(file.getFileName());
-//			});
-//			customerRepo.deleteById(customerId);
-//			
-//			return new StringBuffer().append("Delete Customer successfully!").toString();
-//		}
-//		return new StringBuffer().append("Failed deleted, cause Customer doest not exists!").toString(); 
-		
+		if (appointmentRepository.existsById(appointmentId)) {
+			
+			appointmentRepository.deleteById(appointmentId);
+			return new ResponseEntity<>(new ResponseMessage("appointment delete."), HttpStatus.OK);
+			
+		}else {
+			return new ResponseEntity<>(new ResponseMessage("unknow id appointment."), HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@Override
-	public ResponseEntity<?> getAppointment(String appointmentId) {
+	public ResponseEntity<Object> getAppointment(String appointmentId) {
 		if (appointmentRepository.existsById(appointmentId)) {
 			return new ResponseEntity<>(
 					appointmentMapper.appointmentToApointmentResponseDto(appointmentRepository.getById(appointmentId)),
@@ -131,8 +123,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}else {
 			return new ResponseEntity<>(new ResponseMessage("customer id unknow."), HttpStatus.BAD_REQUEST); 
 		}
-		
-
 	}
 
 }
