@@ -161,41 +161,48 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public AppUserResponseDto update(AppUserRequestDto userDto, String userId) {
-		
-		UserPrinciple currentUser  =  (UserPrinciple) SecurityContextHolder. getContext(). getAuthentication(). getPrincipal();
+		this.initCurrentUser();
 		AppUser appUser =  appUserRepo.findById(userId).get();
-		
-		if(userDto.getRoleName()!=null) {
-			if(!userDto.getRoleName().isEmpty()) {
-				appUser.addRole(appRoleRepo.findByRoleName(userDto.getRoleName()));
-				log.info(appRoleRepo.findByRoleName(userDto.getRoleName()).toString());
+		if(this.currentUser.getUserId().equals(appUser.getUserId())) {
+			if(userDto.getRoleName()!=null) {
+				if(!userDto.getRoleName().isEmpty()) {
+					appUser.addRole(appRoleRepo.findByRoleName(userDto.getRoleName()));
+					log.info(appRoleRepo.findByRoleName(userDto.getRoleName()).toString());
+				}
+				else {
+					AppRole role = appRoleRepo.findByRoleName("ROLE_USER");
+					appUser.addRole(role);
+					log.info(role.toString());
+				}
 			}
 			else {
 				AppRole role = appRoleRepo.findByRoleName("ROLE_USER");
 				appUser.addRole(role);
 				log.info(role.toString());
 			}
+			log.info(appUser.getRoles().toString());
+			appUser.setUsername(userDto.getUsername()).setFirstName(userDto.getFirstName()).setLastName(userDto.getLastName()).setEmail(userDto.getEmail())
+			.setLastUpdate(new Date()).setAdminId(currentUser.getUserId());
+			return userMapper.appUserToAppUserResponseDto(appUserRepo.save(appUser));
 		}
-		else {
-			AppRole role = appRoleRepo.findByRoleName("ROLE_USER");
-			appUser.addRole(role);
-			log.info(role.toString());
-		}
-		log.info(appUser.getRoles().toString());
-		appUser.setUsername(userDto.getUsername()).setFirstName(userDto.getFirstName()).setLastName(userDto.getLastName()).setEmail(userDto.getEmail())
-		.setLastUpdate(new Date()).setAdminId(currentUser.getUserId());
-		return userMapper.appUserToAppUserResponseDto(appUserRepo.save(appUser));
+		return new AppUserResponseDto();
+		
 	}
 
 	@Override
 	public String removeUser(String userId) {
-		appUserRepo.deleteById(userId);
-		return "User Delete successfully";
+		this.initCurrentUser();
+		AppUser appUser =  appUserRepo.findById(userId).get();
+		if(this.currentUser.getUserId().equals(appUser.getUserId())) {
+			appUserRepo.deleteById(userId);
+			return "User Delete successfully";
+		}
+		return new StringBuilder("The current admin ").append(appUser.getFirstName()).append("cannot remove the target admin").toString();
+		
 	}
 
 	@Override
 	public Boolean existsByEmail(String email) {
-		
 		return appUserRepo.existsByEmail(email);
 	}
 
@@ -213,25 +220,42 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String addRoleToUser(String username, String roleName) {
-		if(roleName!=null) {
-			AppUser appUser = appUserRepo.findByUsername(username).get();
-			AppRole  appRole = appRoleRepo.findByRoleName(roleName);
-			appUser.getRoles().add(appRole);
-			appUserRepo.save(appUser);
-			return String.join(" ", "Role ", roleName , "added successffuly", "to", username);
+		this.initCurrentUser();
+		AppUser appUser = appUserRepo.findByUsername(username).get();
+		if(this.currentUser.getUserId().equals(appUser.getUserId())) {
+			if(roleName!=null) {
+				
+				AppRole  appRole = appRoleRepo.findByRoleName(roleName);
+				appUser.getRoles().add(appRole);
+				appUserRepo.save(appUser);
+				return String.join(" ", "Role ", roleName , "added successffuly", "to", username);
+			}
+			else {
+				return String.join(" ", "role doest not added to user");
+			}
 		}
-		return String.join(" ", "role doest not added to user");
+		return String.join(" ", " The current admin" , appUser.getFirstName(), "cannot add change the role");
+		
 	}
 
 	@Override
 	public String removeRoleToUser(String username, String roleName) {
-		if(roleName!=null) {
-			AppUser appUser = appUserRepo.findByUsername(username).get();
-			appUser.getRoles().removeIf(role->role.getRoleName().equals(roleName));
-			appUserRepo.save(appUser);
-			return String.join(" ", "Role", roleName, "deleted successffuly", "to", username);
+		this.initCurrentUser();
+		AppUser appUser = appUserRepo.findByUsername(username).get();
+		if(this.currentUser.getUserId().equals(appUser.getUserId())) {
+			if(roleName!=null) {
+				
+				appUser.getRoles().removeIf(role->role.getRoleName().equals(roleName));
+				appUserRepo.save(appUser);
+				return String.join(" ", "Role", roleName, "deleted successffuly", "to", username);
+			}
+			else {
+				return String.join(" ", "role doest not change");
+			}
+			
 		}
-		return String.join(" ", "role doest not removed to user");
+		
+		return String.join(" ", " The current admin" , appUser.getFirstName(), "cannot add change the role");
 		
 		
 	}
