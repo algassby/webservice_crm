@@ -82,9 +82,6 @@ public class Customer implements Serializable {
 	private Organization organization;
 	
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "customer")
-//	@JoinTable(name="customers_images", 
-//		    joinColumns=@JoinColumn(name="customer_id"), 
-//		    inverseJoinColumns=@JoinColumn(name="file_id"))
 	private Set<FileInfo> fileInfos =  new HashSet<>();
 	
 	

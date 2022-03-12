@@ -22,7 +22,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 /**
@@ -34,11 +36,13 @@ import lombok.experimental.Accessors;
 @Entity(name = "Organization")
 @Table(name = "Organization")
 
-@Data
+
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Accessors(chain = true )
+@Getter
+@Setter
 public class Organization {
 	
 	@Id
@@ -59,10 +63,9 @@ public class Organization {
 	@Column(name = "logo")
 	private String logo;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinTable(name="users_organizations", 
-		    joinColumns=@JoinColumn(name="orga_id"), 
-		    inverseJoinColumns=@JoinColumn(name="user_id"))
+	@ToString.Exclude
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@JoinColumn(name="user_id")
 	private AppUser appUser;
 	
 	@Column(name = "adminId")
@@ -70,10 +73,6 @@ public class Organization {
 
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "organization", targetEntity=Customer.class)
 	@Fetch(FetchMode.JOIN)
-	//@JoinColumn(name = "orga_id", referencedColumnName = "customer_id")
-//	@JoinTable(name="customers_images", 
-//    joinColumns=@JoinColumn(name="orga_id"), 
-//    inverseJoinColumns=@JoinColumn(name="customer_id"))
 	private Set<Customer> customers = new HashSet<>();
 	
 }
