@@ -23,6 +23,7 @@ import com.ynov.crm.mapper.AppointmentMapper;
 import com.ynov.crm.repository.AppointmentRepository;
 import com.ynov.crm.repository.CustomerRepository;
 import com.ynov.crm.requestdto.AppointmentRequestDto;
+import com.ynov.crm.requestdto.verifRequestDto.VerifAppointment;
 import com.ynov.crm.responsedto.AppointmentResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 
@@ -50,17 +51,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public ResponseEntity<Object> save(AppointmentRequestDto appointmentRequestDto) {
-		// TODO doit retourner un simple ok et pas l'objet en question
+		// TODO doit retourner un simple ok et pas l'objet en question l'object sera que pour les test
 		// TODO tester les champs surtout date 
-		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-		Validator validator = factory.getValidator();
-
-		Set<ConstraintViolation<AppointmentRequestDto>> violations = validator.validate(appointmentRequestDto);
-		for (ConstraintViolation<AppointmentRequestDto> violation : violations) {
-			log.error("erreur : {}",violation.getMessageTemplate());
-			if (!violations.isEmpty()) {
-				return new ResponseEntity<>(violation.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-			}
+		String resultVerif = VerifAppointment.verifChampAppointment(appointmentRequestDto);
+		if(resultVerif!=null) {
+			new ResponseEntity<>(resultVerif, HttpStatus.NOT_ACCEPTABLE);
 		}
 
 		Appointment appointment = appointmentMapper.appointmentRequestDtoToAppointment(appointmentRequestDto);
