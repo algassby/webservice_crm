@@ -37,7 +37,7 @@ public class ApointmentRestController {
 	}
 
 	@PutMapping("/update/{appointmentId}")
-	public ResponseEntity<?> update(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto,
+	public ResponseEntity<?> update(@RequestBody AppointmentRequestDto appointmentRequestDto,
 			@PathVariable String appointmentId) {
 		return appointmentService.update(appointmentRequestDto, appointmentId);
 	}

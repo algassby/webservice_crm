@@ -1,8 +1,5 @@
 package com.ynov.crm.mapper;
 
-import java.time.ZoneOffset;
-import java.util.Date;
-
 import org.mapstruct.Mapper;
 
 import com.ynov.crm.enties.Appointment;
