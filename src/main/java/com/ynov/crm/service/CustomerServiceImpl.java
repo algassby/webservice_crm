@@ -194,7 +194,7 @@ public class CustomerServiceImpl implements CustomerService {
 		
 		Customer customer = customerRepo.findById(customerId).get();
 		if(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)) {
-			FileInfo image = fileService.save(file, customerId);
+			FileInfo image = fileService.uploadToLocalFileSystem(customerId, file);
 			Set<FileInfo> images  = customer.getFileInfos();
 			images.add(image);
 			customer.setFileInfos(images);
@@ -249,7 +249,8 @@ public class CustomerServiceImpl implements CustomerService {
 			
 			      List<String> fileNames = new ArrayList<>();
 			      Arrays.asList(files).stream().forEach(file -> {
-			      FileInfo fileInfo =   fileService.save(file, customerId);
+			    	  
+			      FileInfo fileInfo =   fileService.uploadToLocalFileSystem(customerId, file);
 			        fileNames.add(file.getOriginalFilename());
 			        images.add(fileInfo);
 			        

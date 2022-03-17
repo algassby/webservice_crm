@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
 /**
  * @author algas
@@ -36,6 +37,7 @@ import lombok.ToString;
  */
 @Entity
 @Table(name = "FileInfo")
+@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -51,6 +53,10 @@ public class FileInfo {
 	private String fileName;
 	@Column(name = "fileUrl")
 	private String fileUrl;
+	@Column(name = "type")
+	private String type;
+	@Column(name = "size")
+	private Long size;
 	@ManyToOne(cascade = CascadeType.PERSIST , fetch = FetchType.LAZY)
 	@JoinColumn(name = "customerId", nullable = true)
 //	  @JoinTable(name="customers_images", 

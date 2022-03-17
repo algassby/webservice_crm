@@ -29,6 +29,8 @@ public interface FileInfoService {
     public Resource load(String filename);
     public Stream<Path> loadAll();
     public void deleteAll();
-    public List<FileInfoResponseDto> findAllFile();
+    public List<FileInfoResponseDto> findAllFile(Integer pageNo, Integer pageSize, String sortBy);
     public List<FileInfoResponseDto> findAllFileByCustomer(String customerId);
+    public FileInfo uploadToLocalFileSystem(String customerId, MultipartFile file);
+ 
 }

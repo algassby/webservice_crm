@@ -12,15 +12,18 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.ServletContext;
 
-import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +31,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.enties.Customer;
 import com.ynov.crm.enties.FileInfo;
 import com.ynov.crm.exception.FileUploadException;
@@ -45,6 +51,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 /**
  * @author algas
  *
@@ -160,27 +170,32 @@ public class FileInfoServiceImpl implements FileInfoService {
 	public String deleteFile(String fileName) {
 		log.info(root.toString());
 		 Path path = Paths.get(String.join("", root.toString(),new StringBuilder().append(File.separatorChar).append(fileName).toString()));
-		
-		 logger.info(String.join(" "," Path =", path.toString()));
-	        try {
-	            // Delete file or directory
-	        		Files.delete(path);
+		   if (path.toFile().exists()) {
+			   logger.info(String.join(" "," Path =", path.toString()));
+		        try {
+		            // Delete file or directory
+		        		Files.delete(path);
 
-	        } catch (NoSuchFileException ex) {
-	            System.out.printf("No such file or directory: %s\n", path);
-	        } catch (DirectoryNotEmptyException ex) {
-	            System.out.printf("Directory %s is not empty\n", path);
-	        } catch (IOException ex) {
-	            System.out.println(ex);
-	        }
-			return String.join(" ","Suppression de l'image", fileName, "reussie avec succès!");
+		        } catch (NoSuchFileException ex) {
+		            System.out.printf("No such file or directory: %s\n", path);
+		        } catch (DirectoryNotEmptyException ex) {
+		            System.out.printf("Directory %s is not empty\n", path);
+		        } catch (IOException ex) {
+		            System.out.println(ex);
+		        }
+				return String.join(" ","Suppression de l'image", fileName, "reussie avec succès!");
+		   }
+		   return String.join(" ","Image doest not exists", fileName);
+		   
+		 
 	}
 	@Override
 	public String deleteFileWithUser(String fileName) {
 		log.info(root.toString());
 		 Path path = Paths.get(String.join("", root.toString(),new StringBuilder().append(File.separatorChar).append(fileName).toString()));
 		
-		 logger.info(String.join(" "," Path =", path.toString()));
+	    if (path.toFile().exists()) {
+	    	logger.info(String.join(" "," Path =", path.toString()));
 	        try {
 	            // Delete file or directory
 	        	FileInfo fileInfo = fileInfoRepository.findByFileName(fileName);
@@ -196,6 +211,9 @@ public class FileInfoServiceImpl implements FileInfoService {
 	            System.out.println(ex);
 	        }
 			return String.join(" ","Suppression de l'image", fileName, "reussie avec succès!");
+	    }
+	    return String.join(" ","the image doest not exist", fileName);
+		 
 	}
 	
 	 @Override
@@ -208,9 +226,12 @@ public class FileInfoServiceImpl implements FileInfoService {
 			return  fileInfoRepository.existsByFileName(fileName);
 		}
 		@Override
-		public List<FileInfoResponseDto> findAllFile() {
-			
-			return fileInfoRepository.findAll()
+		public List<FileInfoResponseDto> findAllFile(Integer pageNo, Integer pageSize,
+				String sortBy) {
+			Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+			 
+	        Page<FileInfo> pagedResult = fileInfoRepository.findAll(paging);
+			return pagedResult.getContent()
 					.stream()
 					.map(image->{
 						
@@ -231,7 +252,36 @@ public class FileInfoServiceImpl implements FileInfoService {
 		}
 		@Override
 		public FileInfo getFile(String fileId) {
+			
 			return fileInfoRepository.findById(fileId).get();
 		}
+		@Override
+		public FileInfo uploadToLocalFileSystem(String customerId, MultipartFile file) {
+			FileInfo fileInfo =  new FileInfo();
+			
+			if(fileInfoRepository.existsByFileName(file.getOriginalFilename())) {
+				return fileInfoRepository.findByFileName(file.getOriginalFilename());
+			}
+		    Customer customer = customerRepo.findById(customerId).get();
+			//fileInfo.setFileId(UUID.randomUUID().toString());
+			
+			String fileName = StringUtils.cleanPath(String.join("", file.getOriginalFilename()));
+			Path path = this.root.resolve(fileName);
+			try {
+				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+					
+					.path("/api/files/download/")
+					.path(fileName)
+					.toUriString();
+			
+			fileInfo.setFileName(fileName).setFileUrl(fileDownloadUri).setType(file.getContentType()).setSize(file.getSize()).setCustomer(customer).setLastUpdate(new Date());
+
+			return fileInfoRepository.save(fileInfo);
+		}
+		
 
 }
