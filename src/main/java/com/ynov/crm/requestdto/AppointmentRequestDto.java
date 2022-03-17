@@ -1,9 +1,12 @@
 package com.ynov.crm.requestdto;
 
-import java.time.LocalDateTime;
+
+
+import java.sql.Date;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -25,7 +28,7 @@ public class AppointmentRequestDto {
 	
 	@NotNull(message="date cannot null")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
-	private LocalDateTime date;
+	private Date date;
 	
 	@Nullable
 	private String place; 
