@@ -24,8 +24,9 @@ public interface FileInfoService {
     public FileInfo getFile(String fileId);
     public Boolean existsByFileName(String fileName);
     public byte[] getPhoto(String fileId)throws Exception;
-    public String deleteFile(String fileName);
-    public String deleteFileWithUser(String fileName);
+    public String deleteFile(String fileName, String customerId);
+    public String deleteCustomerDirectory(String customerId);
+    public  String deleteFileWithUser(String fileName);
     public Resource load(String filename);
     public Stream<Path> loadAll();
     public void deleteAll();

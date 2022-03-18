@@ -59,10 +59,7 @@ public class FileInfo {
 	private Long size;
 	@ManyToOne(cascade = CascadeType.PERSIST , fetch = FetchType.LAZY)
 	@JoinColumn(name = "customerId", nullable = true)
-//	  @JoinTable(name="customers_images", 
-//    joinColumns=@JoinColumn(name="file_id"), 
-//    inverseJoinColumns=@JoinColumn(name="customer_id"))
-	
+
 	private Customer customer;
 	
 	@Temporal(TemporalType.TIMESTAMP)
