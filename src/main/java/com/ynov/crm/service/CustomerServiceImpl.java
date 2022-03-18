@@ -126,12 +126,12 @@ public class CustomerServiceImpl implements CustomerService {
 	public CustomerResponseDto save(CustomerRequestDto customerRequestDto) {
 		Customer customer = customerMapper.customerRequestDtoToCustomer(customerRequestDto);
 		
-		if(customerRequestDto.getOrgaId()!=null) {
+		if(organizationRepo.existsById(customerRequestDto.getOrgaId())) {
 			customer.setOrganization(organizationRepo.findById(customerRequestDto.getOrgaId()).get());
+			return customerMapper.customerToCustomerResponseDto(customerRepo.save(customer));
 		}
+		return new CustomerResponseDto();
 		
-		
-		return customerMapper.customerToCustomerResponseDto(customerRepo.save(customer));
 	}
 
 	@Override
@@ -170,9 +170,10 @@ public class CustomerServiceImpl implements CustomerService {
 			if(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)) {
 				log.info(customer.toString());
 				log.info(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser).toString());
-				customer.getFileInfos().stream().forEach(file->{
-					fileService.deleteFileWithUser(file.getFileName());
-				});
+				fileService.deleteCustomerDirectory(customerId);
+//				customer.getFileInfos().stream().forEach(file->{
+//					
+//				});
 				customerRepo.deleteById(customerId);
 				return new StringBuffer().append("Delete Customer successfully!").toString();
 			}
@@ -220,7 +221,7 @@ public class CustomerServiceImpl implements CustomerService {
 	
 		Customer customer = customerRepo.findById(customerId).get();
 		if(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)) {
-			fileService.deleteFile(imageName);
+			fileService.deleteFile(imageName, customerId);
 			Set<FileInfo> images  = customer.getFileInfos();
 			images.removeIf(image->image.getFileName().equals(imageName));
 			customer.setFileInfos(images);
@@ -295,7 +296,7 @@ public class CustomerServiceImpl implements CustomerService {
 				//images.removeIf(img->img.getFileName().equals(image));                        
 				
 				images.removeIf(img->img.getFileName().equals(image));
-				fileService.deleteFile(image);
+				fileService.deleteFile(image, customerId);
 				
 			});
 			

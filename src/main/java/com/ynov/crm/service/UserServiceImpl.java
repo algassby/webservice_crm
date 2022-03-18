@@ -113,18 +113,29 @@ public class UserServiceImpl implements UserService {
 	
 
 	@Override
-	public List<AppUserResponseDto> findAllUsersByPaging(Integer pageNo, Integer pageSize,
-			String sortBy) {
+	public List<AppUserResponseDto> findAllUsersByPaging(Integer pageNo, Integer pageSize, String sortBy) {
 		Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
-		 
-        Page<AppUser> pagedResult = appUserRepo.findAll(paging);
-        if(pagedResult.hasContent()) {
-            return pagedResult.getContent().stream()
-            		.map(user->userMapper.appUserToAppUserResponseDto(user))
-            		.collect(Collectors.toList());
-        } else {
-            return new ArrayList<>();
-        }
+		this.initCurrentUser();
+		
+		log.debug(String.valueOf(this.currentUser.getUsername().equals(getSuperAdmin())));
+		 Page<AppUser> pagedResult = appUserRepo.findAll(paging);
+		if(this.currentUser.getUsername().equals(getSuperAdmin())) {
+			return pagedResult.stream().map(user->userMapper.appUserToAppUserResponseDto(user))
+					.sorted(Comparator.comparing(AppUserResponseDto::getLastUpdate).reversed())
+					.collect(Collectors.toList());
+		}
+		return pagedResult.stream().map(user->userMapper.appUserToAppUserResponseDto(user))
+				.sorted(Comparator.comparing(AppUserResponseDto::getLastUpdate).reversed())
+				.filter(user->user.getUsername().equals(this.currentUser.getUsername()))
+				.collect(Collectors.toList());
+       
+//        if(pagedResult.hasContent()) {
+//            return pagedResult.getContent().stream()
+//            		.map(user->userMapper.appUserToAppUserResponseDto(user))
+//            		.collect(Collectors.toList());
+//        } else {
+//            return new ArrayList<>();
+//        }
 	}
 
 

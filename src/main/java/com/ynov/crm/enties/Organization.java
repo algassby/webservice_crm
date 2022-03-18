@@ -20,6 +20,9 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -66,6 +69,7 @@ public class Organization {
 	@ToString.Exclude
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinColumn(name="user_id")
+	//@JsonProperty(access = Access.WRITE_ONLY)
 	private AppUser appUser;
 	
 	@Column(name = "adminId")

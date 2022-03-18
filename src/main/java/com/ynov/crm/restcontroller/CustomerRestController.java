@@ -5,6 +5,8 @@ package com.ynov.crm.restcontroller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ynov.crm.requestdto.CustomerRequestDto;
 import com.ynov.crm.requestdto.JsonObjectDto;
+import com.ynov.crm.responsedto.CustomerResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.CustomerService;
 
@@ -72,8 +75,14 @@ public class CustomerRestController {
 		
 	}
 	@PostMapping("/save")
-	public ResponseEntity<?> save(@RequestBody CustomerRequestDto customerRequestDto) {
-		return new ResponseEntity<>(customerService.save(customerRequestDto), HttpStatus.OK); 
+	public ResponseEntity<?> save(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
+		if(customerRequestDto.getOrgaId()==null) {
+			return new ResponseEntity<>(new ResponseMessage("Organization inexistante"), HttpStatus.OK); 
+		}
+	
+		CustomerResponseDto customerResponseDto = customerService.save(customerRequestDto);
+		return customerResponseDto.getCustomerId()!=null ? new ResponseEntity<>(customerResponseDto, HttpStatus.OK)
+				:  new ResponseEntity<>(new ResponseMessage("Cannot save the customer, because the organization is not found"), HttpStatus.OK);  
 		
 	}
 	
