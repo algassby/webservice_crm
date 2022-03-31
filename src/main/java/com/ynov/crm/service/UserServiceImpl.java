@@ -150,10 +150,6 @@ public class UserServiceImpl implements UserService {
 
 		UserPrinciple currentUser  =  (UserPrinciple) SecurityContextHolder. getContext(). getAuthentication(). getPrincipal();
 
-
-
-		UserPrinciple currentUser  =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication(). getPrincipal();
-
 		log.info(currentUser.toString());
 		AppUser appUser =  userMapper.appUserRequestDtoToAppUser(userDto).setLastUpdate(new Date()).setAdminId(currentUser.getUserId()).setUserKey(encoder.encode(UUID.randomUUID().toString()));
 
