@@ -44,7 +44,7 @@ public class AppUserResponseDto {
     private String adminId;
 	@Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdate;
-	//@JsonProperty(access = Access.WRITE_ONLY)
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private Set<Organization> organizations = new HashSet<>();
 	
 

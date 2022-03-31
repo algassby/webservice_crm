@@ -51,11 +51,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public ResponseEntity<Object> save(AppointmentRequestDto appointmentRequestDto) {
-		// TODO doit retourner un simple ok et pas l'objet en question l'object sera que pour les test
-		// TODO tester les champs surtout date 
+		// TODO tester champ date
 		String resultVerif = VerifAppointment.verifChampAppointment(appointmentRequestDto);
-		if(resultVerif!=null) {
-			new ResponseEntity<>(resultVerif, HttpStatus.NOT_ACCEPTABLE);
+		if (resultVerif != null) {
+			return new ResponseEntity<>(resultVerif, HttpStatus.NOT_ACCEPTABLE);
 		}
 
 		Appointment appointment = appointmentMapper.appointmentRequestDtoToAppointment(appointmentRequestDto);
@@ -75,14 +74,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public ResponseEntity<Object> update(AppointmentRequestDto appointmentRequestDto, String appointmentId) {
-		// TODO verif si id existe
-		// TODO verif si champs ok
+		// TODO verif champ date
+		String resultVerif = VerifAppointment.verifChampAppointment(appointmentRequestDto);
+		if (resultVerif != null) {
+			return new ResponseEntity<>(resultVerif, HttpStatus.NOT_ACCEPTABLE);
+		}
 		if (appointmentRepository.existsById(appointmentId)) {
 
 			Appointment appointment = appointmentRepository.findById(appointmentId).get();
 			if (customerRepository.existsById(appointmentRequestDto.getCustomerId())) {
 				appointment.setCustomer(customerRepository.findById(appointmentRequestDto.getCustomerId()).get());
-				// TODO si champs ok
+
 				appointment.setDate(appointmentRequestDto.getDate()).setLabel(appointmentRequestDto.getLabel());
 				appointmentRepository.save(appointment);
 				return new ResponseEntity<>(new ResponseMessage("appointment modify"), HttpStatus.CREATED);

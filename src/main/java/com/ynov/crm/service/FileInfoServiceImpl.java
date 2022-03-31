@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -69,6 +70,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 	private FileInfoRepository fileInfoRepository;
 	private FileInfoMapper fileInfoMapper;
 	private CustomerRepository customerRepo;
+	private final Path root = Paths.get("uploads");
 	
 	/**
 	 * @param fileInfoRepository
@@ -80,10 +82,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 		this.fileInfoMapper  = fileInfoMapper;
 		this.customerRepo = customerRepo;
 	}
-	@Autowired 
-	ServletContext context;
-
-    private final Path root = Paths.get("uploads");
+   
 
     @Override
     public void init() {
@@ -167,21 +166,24 @@ public class FileInfoServiceImpl implements FileInfoService {
 	    }
 	  }
 	@Override
-	public String deleteFile(String fileName) {
+	public String deleteFile(String fileName, String customerId) {
 		log.info(root.toString());
 		 Path path = Paths.get(String.join("", root.toString(),new StringBuilder().append(File.separatorChar).append(fileName).toString()));
-		   if (path.toFile().exists()) {
-			   logger.info(String.join(" "," Path =", path.toString()));
+		
+		 Path rootUserDirectory = Paths.get(new StringBuilder().append(this.root.toString()).append(File.separatorChar).append(customerId).append(File.separatorChar).append(fileName).toString());
+		 log.info(rootUserDirectory.toString());
+		 if (rootUserDirectory.toFile().exists()) {
+			   logger.debug(String.join(" "," Path =", rootUserDirectory.toString()));
 		        try {
 		            // Delete file or directory
-		        		Files.delete(path);
+		        		Files.delete(rootUserDirectory);
 
 		        } catch (NoSuchFileException ex) {
-		            System.out.printf("No such file or directory: %s\n", path);
+		            log.info("No such file or directory: %s\n", path);
 		        } catch (DirectoryNotEmptyException ex) {
-		            System.out.printf("Directory %s is not empty\n", path);
+		        	log.info("Directory %s is not empty\n", path);
 		        } catch (IOException ex) {
-		            System.out.println(ex);
+		        	log.info(ex.toString());
 		        }
 				return String.join(" ","Suppression de l'image", fileName, "reussie avec succès!");
 		   }
@@ -193,7 +195,6 @@ public class FileInfoServiceImpl implements FileInfoService {
 	public String deleteFileWithUser(String fileName) {
 		log.info(root.toString());
 		 Path path = Paths.get(String.join("", root.toString(),new StringBuilder().append(File.separatorChar).append(fileName).toString()));
-		
 	    if (path.toFile().exists()) {
 	    	logger.info(String.join(" "," Path =", path.toString()));
 	        try {
@@ -214,6 +215,37 @@ public class FileInfoServiceImpl implements FileInfoService {
 	    }
 	    return String.join(" ","the image doest not exist", fileName);
 		 
+	}
+	@Override
+	public String deleteCustomerDirectory(String customerId) {
+		Path path = Paths.get(String.join("", root.toString(),new StringBuilder().append(File.separatorChar).append(customerId).toString()));
+
+		log.info(path.toString());
+		  if (path.toFile().exists()) {
+			  this.fileInfoRepository.findAll().stream().forEach(image->{
+				  image.setCustomer(null);
+				  fileInfoRepository.deleteById(image.getFileId());
+			  });
+			  //fileInfoRepository.deleteAll();
+			  
+			 fileInfoRepository.removeAll();
+				
+				//fileInfoRepository.deleteById(fileInfo.getFileId());
+
+				try {
+					Files.walk(path)
+					  .sorted(Comparator.reverseOrder())
+					  .map(Path::toFile)
+					  .forEach(File::delete);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return "user delete directory";
+		  }
+		  return "failed delete user directory";
+		
+//		FileSystemUtils.deleteRecursively(root.toFile());
 	}
 	
 	 @Override
@@ -257,16 +289,34 @@ public class FileInfoServiceImpl implements FileInfoService {
 		}
 		@Override
 		public FileInfo uploadToLocalFileSystem(String customerId, MultipartFile file) {
-			FileInfo fileInfo =  new FileInfo();
-			
-			if(fileInfoRepository.existsByFileName(file.getOriginalFilename())) {
-				return fileInfoRepository.findByFileName(file.getOriginalFilename());
+		
+			FileInfo fileInfo = null;
+			if(fileInfoRepository.existsByFileName(String.join("_", customerId, file.getOriginalFilename()))) {
+			   fileInfo =  fileInfoRepository.findByFileName(String.join("_", customerId, file.getOriginalFilename()));
+			   log.info("ok if");
 			}
-		    Customer customer = customerRepo.findById(customerId).get();
-			//fileInfo.setFileId(UUID.randomUUID().toString());
+			else {
+				fileInfo = new FileInfo();
+				log.info("ok else");
 			
-			String fileName = StringUtils.cleanPath(String.join("", file.getOriginalFilename()));
-			Path path = this.root.resolve(fileName);
+			}
+			
+		    Customer customer = customerRepo.findById(customerId).get();
+		    Path rootUserDirectory = Paths.get(new StringBuilder().append(this.root.toString()).append(File.separatorChar).append(customer.getCustomerId()).toString());
+		    log.info(rootUserDirectory.toString());
+		    if(Files.notExists(rootUserDirectory)) {
+		    	try {
+					Files.createDirectories(rootUserDirectory);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					throw new RuntimeException("Could not initialize folder for upload!");
+				}
+		    }
+			
+			
+			String fileName = StringUtils.cleanPath(String.join("_", customer.getCustomerId(), file.getOriginalFilename()));
+			Path path = rootUserDirectory.resolve(fileName);
+			log.info(path.toString());
 			try {
 				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
@@ -277,7 +327,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 					.path("/api/files/download/")
 					.path(fileName)
 					.toUriString();
-			
+			log.info(fileInfo.toString());
 			fileInfo.setFileName(fileName).setFileUrl(fileDownloadUri).setType(file.getContentType()).setSize(file.getSize()).setCustomer(customer).setLastUpdate(new Date());
 
 			return fileInfoRepository.save(fileInfo);
