@@ -69,7 +69,7 @@ public class AppUser {
 	private  String username;
 	
 	@JsonProperty(access = Access.WRITE_ONLY)
-    private String password;
+    private String userKey;
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name = "user_roles", 

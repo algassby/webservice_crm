@@ -54,7 +54,7 @@ public class AuthRestController {
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginRequest) {
 
 		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getUserKey()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -82,7 +82,7 @@ public class AuthRestController {
 		// Creating user's account
 		AppUser user = new AppUser();
 		user.setFirstName(userDto.getFirstName()).setLastName(userDto.getLastName()).setUsername(userDto.getUsername()).setEmail(userDto.getEmail())
-			.setPassword(encoder.encode(userDto.getPassword())).setRoles(roles);
+			.setUserKey(encoder.encode(userDto.getUserKey())).setRoles(roles);
 
 		
 

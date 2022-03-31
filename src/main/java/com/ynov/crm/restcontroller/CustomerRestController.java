@@ -24,6 +24,10 @@ import com.ynov.crm.requestdto.JsonObjectDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.CustomerService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import lombok.Data;
 
 /**
@@ -47,6 +51,10 @@ public class CustomerRestController {
 	}
 	
 	@GetMapping
+	@Operation(summary = "get All Customers")
+    @ApiResponse(responseCode = "400", description = "Invalid Name Supplied")
+    @ApiResponse(responseCode = "404", description = "customer not found")
+    
 	public ResponseEntity<?> getAllCustomer(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "10")
 	Integer pageSize, @RequestParam(defaultValue = "lastName")  String sortBy) {
 		return new ResponseEntity<>(customerService.getAllCustomer(pageNo, pageSize, sortBy), HttpStatus.OK);

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.ynov.crm.enties.FileInfo;
 import com.ynov.crm.enties.Organization;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,13 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true )
+
+@Schema(name="Customer", description="Entity contains Customer information") 
+
 public class CustomerResponseDto {
 
 	private String  customerId;
+	@Schema(description="Customer firstName", maximum="250")
 	private String  firstName;
 	private String  lastName;
 	private String  phoneNumer;

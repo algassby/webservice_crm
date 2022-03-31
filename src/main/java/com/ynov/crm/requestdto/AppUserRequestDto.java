@@ -37,9 +37,9 @@ public class AppUserRequestDto {
 	@NotEmpty
 	private  String username;
 
-	@NotBlank
-	@JsonProperty(access = Access.WRITE_ONLY)
-    private String password;
+//	@NotBlank
+//	@JsonProperty(access = Access.WRITE_ONLY)
+//    private String userKey;
 
 	@NotEmpty
 	@NotBlank

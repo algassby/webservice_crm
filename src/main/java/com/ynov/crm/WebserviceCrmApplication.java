@@ -20,7 +20,21 @@ import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+
 @SpringBootApplication
+@OpenAPIDefinition(
+        info = @Info(
+                title = "CRM API",
+                version = "1.0",
+                description = "CRM API",
+                license = @License(name = "Apache 2.0", url = "http://localhost:8084"),
+                contact = @Contact(url = "http://localhost:8084", name = "MAS", email = "mas@gmail.com")
+        )
+)
 public class WebserviceCrmApplication {
 	@Autowired
 	PasswordEncoder encoder;
@@ -51,7 +65,7 @@ public class WebserviceCrmApplication {
 				roles.add(roleDao.findByRoleName("ROLE_ADMIN"));
 				
 				//user.setUserId(UUID.randomUUID().toString());
-				user.setEmail("admin@admin.com").setFirstName("admin").setLastName("admin").setPassword(encoder.encode("123456789")).setUsername("admin")
+				user.setEmail("admin@admin.com").setFirstName("admin").setLastName("admin").setUserKey(encoder.encode("123456789")).setUsername("admin")
 				.setRoles(roles).setLastUpdate(new Date()).setAdminId(user.getUserId());
 			
 				dao.save(user);

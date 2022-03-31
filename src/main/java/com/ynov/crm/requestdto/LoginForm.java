@@ -9,8 +9,8 @@ public class LoginForm {
     private String username;
 
     @NotBlank
-    @Size(min = 6, max = 40)
-    private String password;
+    @Size(min = 6, max = 250)
+    private String userKey;
 
     public String getUsername() {
         return username;
