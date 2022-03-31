@@ -3,25 +3,38 @@ package com.ynov.crm;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
-import javax.servlet.MultipartConfigElement;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.unit.DataSize;
+
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.ynov.crm.enties.AppRole;
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+
 @SpringBootApplication
+@OpenAPIDefinition(
+        info = @Info(
+                title = "CRM API",
+                version = "1.0",
+                description = "CRM API",
+                license = @License(name = "Apache 2.0", url = "http://localhost:8084"),
+                contact = @Contact(url = "http://localhost:8084", name = "MAS", email = "mas@gmail.com")
+        )
+)
 public class WebserviceCrmApplication {
 	@Autowired
 	PasswordEncoder encoder;
@@ -29,7 +42,7 @@ public class WebserviceCrmApplication {
 		SpringApplication.run(WebserviceCrmApplication.class, args);
 
 	}
-	
+
 	@Bean
 	CommandLineRunner start(AppUserRepository dao, AppRoleRepository roleDao) {
 		return args->{
@@ -52,7 +65,7 @@ public class WebserviceCrmApplication {
 				roles.add(roleDao.findByRoleName("ROLE_ADMIN"));
 				
 				//user.setUserId(UUID.randomUUID().toString());
-				user.setEmail("admin@admin.com").setFirstName("admin").setLastName("admin").setPassword(encoder.encode("123456789")).setUsername("admin")
+				user.setEmail("admin@admin.com").setFirstName("admin").setLastName("admin").setUserKey(encoder.encode("123456789")).setUsername("admin")
 				.setRoles(roles).setLastUpdate(new Date()).setAdminId(user.getUserId());
 			
 				dao.save(user);

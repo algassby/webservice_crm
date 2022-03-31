@@ -5,6 +5,8 @@ package com.ynov.crm.restcontroller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,8 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ynov.crm.requestdto.CustomerRequestDto;
 import com.ynov.crm.requestdto.JsonObjectDto;
+import com.ynov.crm.responsedto.CustomerResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.CustomerService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import lombok.Data;
 
@@ -47,10 +54,18 @@ public class CustomerRestController {
 	}
 	
 	@GetMapping
+	@Operation(summary = "get All Customers")
+    @ApiResponse(responseCode = "400", description = "Invalid Name Supplied")
+    @ApiResponse(responseCode = "404", description = "customer not found")
+    
 	public ResponseEntity<?> getAllCustomer(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "10")
 	Integer pageSize, @RequestParam(defaultValue = "lastName")  String sortBy) {
 		return new ResponseEntity<>(customerService.getAllCustomer(pageNo, pageSize, sortBy), HttpStatus.OK);
 		
+	}
+	@GetMapping("/findbyOragnizationId")
+	public ResponseEntity<?> findByOrganization (@RequestParam String orgnizationId){
+		return ResponseEntity.ok().body(customerService.findByOrganization(orgnizationId));
 	}
 	@GetMapping("/{customerId}")
 	public ResponseEntity<?> getCustomer(@PathVariable String customerId) {
@@ -68,12 +83,18 @@ public class CustomerRestController {
 		
 	}
 	@PostMapping("/save")
-	public ResponseEntity<?> save(@RequestBody CustomerRequestDto customerRequestDto) {
-		return new ResponseEntity<>(customerService.save(customerRequestDto), HttpStatus.OK); 
+	public ResponseEntity<?> save(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
+		if(customerRequestDto.getOrgaId()==null) {
+			return new ResponseEntity<>(new ResponseMessage("Organization inexistante"), HttpStatus.OK); 
+		}
+	
+		CustomerResponseDto customerResponseDto = customerService.save(customerRequestDto);
+		return customerResponseDto.getCustomerId()!=null ? new ResponseEntity<>(customerResponseDto, HttpStatus.OK)
+				:  new ResponseEntity<>(new ResponseMessage("Cannot save the customer, because the organization is not found"), HttpStatus.OK);  
 		
 	}
 	
-	@PutMapping("/update/{customerId}")
+	@PutMapping("/{customerId}/update")
 	public ResponseEntity<?> update(@RequestBody CustomerRequestDto customerRequestDto, @PathVariable String customerId) {
 		if(customerId ==null) {
 			return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus. NOT_FOUND); 
@@ -86,43 +107,33 @@ public class CustomerRestController {
 		
 	}
 	
-	@DeleteMapping("/delete")
-	public ResponseEntity<?> update(@RequestParam(value = "customerId") String customerId) {
-		return new ResponseEntity<>(customerService.delete(customerId), HttpStatus.OK); 
+	@DeleteMapping("/{customerId}/delete")
+	public ResponseEntity<?> update(@PathVariable String customerId) {
+		return new ResponseEntity<>(new ResponseMessage(customerService.delete(customerId)), HttpStatus.OK); 
 		
 	}
-	@PutMapping("/update/addImage/{customerId}")
-	public ResponseEntity<?> addImageToCustomer(@PathVariable  String customerId, @RequestParam(value = "file") MultipartFile file ) {
-		
-		return new ResponseEntity<>(customerService.addImageToCustomer(customerId, file), HttpStatus.OK) ;
-		
-	}
-	@PutMapping("/update/addManyImage/{customerId}")
+	
+	@PutMapping("/update/{customerId}/images/save")
 	public ResponseEntity<?> addManyImage(@PathVariable  String customerId, @RequestParam(value = "files") MultipartFile files []) {
 		if(files.length==0) {
 			return new ResponseEntity<>(new ResponseMessage("Cannot  Upload images to customer, cause file is empty!"), HttpStatus.BAD_REQUEST); 
 		}
-		return new ResponseEntity<>(customerService.addAllImageToCustomer(customerId, files), HttpStatus.OK); 
+		return new ResponseEntity<>(new ResponseMessage(customerService.addAllImageToCustomer(customerId, files)), HttpStatus.OK); 
 		
 	}
 	
 	
-	@PutMapping("/update/deleteManyImage/{customerId}")
+	@PutMapping("/update/{customerId}/images/delete")
 	public ResponseEntity<?> removeManyImageToCustomer(@PathVariable  String customerId, @RequestBody JsonObjectDto jsonRequestDto) {
 		if(jsonRequestDto.getImages().isEmpty()) {
 			return new ResponseEntity<>(new ResponseMessage("Cannot  delete images from customer, cause files list is empty!"), HttpStatus.BAD_REQUEST);
 		}
 		
-		return new ResponseEntity<>(customerService.removeManyImageToCustomer(customerId, jsonRequestDto), HttpStatus.OK); 
+		return new ResponseEntity<>(new ResponseMessage(customerService.removeManyImageToCustomer(customerId, jsonRequestDto)), HttpStatus.OK); 
 		
 	}
 	
-	@PutMapping("/update/removeImage/{customerId}")
-	public ResponseEntity<?> addImageToCustomer(@PathVariable  String customerId, @RequestParam(value = "imageName") String imageName) {
-		
-		return new ResponseEntity<>(customerService.removeImageToCustomer(customerId, imageName), HttpStatus.OK); 
-		
-	}
+	
 	
 	
 }

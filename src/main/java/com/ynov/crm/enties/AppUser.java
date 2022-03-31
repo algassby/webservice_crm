@@ -20,7 +20,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Email;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -62,10 +66,11 @@ public class AppUser {
 	private  String email;
 	
 	@Column(name = "username", length = 60)
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private  String username;
 	
 	@JsonProperty(access = Access.WRITE_ONLY)
-    private String password;
+    private String userKey;
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name = "user_roles", 
@@ -75,14 +80,17 @@ public class AppUser {
             @JoinColumn(name = "role_id") })
     private Set<AppRole> roles = new HashSet<>();
 	
+	
 	@Column(name = "admin_id", length = 60)
 	private String adminId;
 	@Column(name = "lastUpdate")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;
-	
-	@OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+
+	@JsonProperty(access = Access.WRITE_ONLY)
+	@OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "appUser")
 	private Set<Organization> organizations = new HashSet<>();
+	
 	
 	public void addRole(AppRole appRole) {
 		this.getRoles().add(appRole);

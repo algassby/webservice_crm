@@ -9,7 +9,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -27,6 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
 /**
  * @author algas
@@ -34,6 +37,7 @@ import lombok.ToString;
  */
 @Entity
 @Table(name = "FileInfo")
+@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -49,9 +53,14 @@ public class FileInfo {
 	private String fileName;
 	@Column(name = "fileUrl")
 	private String fileUrl;
-	//@ManyToOne(fetch = FetchType.LAZY)
-   // @JoinColumn(name = "customerId")
-	//private Customer customer;
+	@Column(name = "type")
+	private String type;
+	@Column(name = "size")
+	private Long size;
+	@ManyToOne(cascade = CascadeType.PERSIST , fetch = FetchType.LAZY)
+	@JoinColumn(name = "customerId", nullable = true)
+
+	private Customer customer;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;

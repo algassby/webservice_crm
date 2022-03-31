@@ -6,8 +6,8 @@ import java.util.HashSet;
 
 import java.util.Set;
 
-
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.enties.Customer;
 
@@ -27,7 +27,9 @@ public class OrganizationResponsDto {
 	private String address;
 	private int nbSalaris;	
 	private String logo;
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private AppUser user;
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private Set<Customer> customers = new HashSet<>();
 
 
