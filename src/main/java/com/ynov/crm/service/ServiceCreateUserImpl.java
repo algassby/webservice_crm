@@ -5,6 +5,7 @@ package com.ynov.crm.service;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +73,8 @@ public class ServiceCreateUserImpl implements ServiceCreateUser {
 	@Override
 	public AppUserResponseDto save(AppUserRequestDto userDto) {
 		this.initCurrentUser();
-		AppUser appUser =  userMapper.appUserRequestDtoToAppUser(userDto).setLastUpdate(new Date()).setAdminId(currentUser.getUserId()).setUserKey(encoder.encode(userDto.getUserKey()));
+		AppUser appUser =  userMapper.appUserRequestDtoToAppUser(userDto)
+				.setLastUpdate(new Date()).setAdminId(currentUser.getUserId()).setUserKey(encoder.encode(UUID.randomUUID().toString()));
 
 		Set<AppRole> roles = appUser.getRoles();
 

@@ -3,16 +3,14 @@
  */
 package com.ynov.crm.service;
 
-<<<<<<< HEAD
+
 import java.util.*;
-=======
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
->>>>>>> master
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -57,40 +55,33 @@ public class CustomerServiceImpl implements CustomerService {
 	private CustomerMapper customerMapper;
 	private OrganizationRepository organizationRepo;
 	private FileInfoService fileService;
-<<<<<<< HEAD
+
 	private MailService mailService;
-=======
+
 	private UserPrinciple currentUser;
 	private CheckAccessAdmin checkAccessAdmin;
->>>>>>> master
 	
 	/**
 	 * @param customerRepo
 	 * @param customerMapper
 	 */
 	@Autowired
-<<<<<<< HEAD
+
 	public CustomerServiceImpl(CustomerRepository customerRepo,
 							   CustomerMapper customerMapper,
 							   OrganizationRepository organizationRepo,
 							   FileInfoService fileService,
-							   MailService mailService
+							   MailService mailService,
+							   CheckAccessAdmin checkAccessAdmin
 							   )
 	{
-
-=======
-	public CustomerServiceImpl(CustomerRepository customerRepo, CustomerMapper customerMapper, OrganizationRepository organizationRepo, FileInfoService fileService, CheckAccessAdmin checkAccessAdmin) {
->>>>>>> master
 		super();
 		this.customerRepo = customerRepo;
 		this.customerMapper = customerMapper;
 		this.organizationRepo = organizationRepo;
 		this.fileService = fileService;
-<<<<<<< HEAD
 		this.mailService = mailService;
-=======
 		this.checkAccessAdmin = checkAccessAdmin;
->>>>>>> master
 		this.fileService.init();
 	}
 	public void initCurrentUser(){
