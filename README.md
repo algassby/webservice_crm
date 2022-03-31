@@ -10,10 +10,10 @@ Ynov projet master webservice
   + mvn clean install, installation des dependances et build du projet
   + mvn spring-boot:run, lancement du projet
 
-Après ces deux commandes, l'api vas demarrer en creant votre base de données s'il elle n'existe et les tables en remplissant la table Role et utilisateurs.
-Un utilisation ayant les informations:
-username:admin
-userKey:123456789
+# Après ces deux commandes, l'api vas demarrer en creant votre base de données s'il elle n'existe et les tables en remplissant la table Role et utilisateurs.
+# Un utilisation ayant les informations:
+* username:admin
+* userKey:123456789
 Il va vous permettre de creer les autres admin, des organisations, des clients, des customers et rajouter des photos pour le customers.
 les images des customers crées sont enregistrées dans dans dossier uploads/customerId.
 Chaque customers aura son propre repertoire (identificant) pour stocker ses photos.
