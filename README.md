@@ -7,8 +7,8 @@ Ynov projet master webservice
 * Demarrer apacher et mysql
 * Tapez la commande suivante: git clone origin master git@github.com:algassby/webservice_crm.git
 * Aller dans la racine du projet, ensuite saisir les commandes maven suivantes:
-+ mvn clean install, installation des dependances et build du projet
-+ mvn spring-boot:run, lancement du projet
+  + mvn clean install, installation des dependances et build du projet
+  + mvn spring-boot:run, lancement du projet
 
 Après ces deux commandes, l'api vas demarrer en creant votre base de données s'il elle n'existe et les tables en remplissant la table Role et utilisateurs.
 Un utilisation ayant les informations:
