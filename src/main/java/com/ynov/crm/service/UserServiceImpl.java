@@ -2,14 +2,11 @@
  * 
  */
 package com.ynov.crm.service;
-
-
-
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,7 +76,6 @@ public class UserServiceImpl implements UserService {
 		this.fileService = fileService;
 		this.mailService = mailService;
 	
-	
 	}
 	/**
 	 * init current user
@@ -136,14 +132,7 @@ public class UserServiceImpl implements UserService {
 				.sorted(Comparator.comparing(AppUserResponseDto::getLastUpdate).reversed())
 				.filter(user->user.getUsername().equals(this.currentUser.getUsername()))
 				.collect(Collectors.toList());
-       
-//        if(pagedResult.hasContent()) {
-//            return pagedResult.getContent().stream()
-//            		.map(user->userMapper.appUserToAppUserResponseDto(user))
-//            		.collect(Collectors.toList());
-//        } else {
-//            return new ArrayList<>();
-//        }
+      
 	}
 
 
@@ -166,7 +155,7 @@ public class UserServiceImpl implements UserService {
 		UserPrinciple currentUser  =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication(). getPrincipal();
 
 		log.info(currentUser.toString());
-		AppUser appUser =  userMapper.appUserRequestDtoToAppUser(userDto).setLastUpdate(new Date()).setAdminId(currentUser.getUserId()).setPassword(encoder.encode(userDto.getPassword()));
+		AppUser appUser =  userMapper.appUserRequestDtoToAppUser(userDto).setLastUpdate(new Date()).setAdminId(currentUser.getUserId()).setUserKey(encoder.encode(UUID.randomUUID().toString()));
 
 		Set<AppRole> roles = appUser.getRoles();
 
@@ -185,7 +174,6 @@ public class UserServiceImpl implements UserService {
 		}
 
 		appUser.setRoles(roles);
-		//appUser.setPassword(this.encoder.encode(appUser.getPassword()));
 		return userMapper.appUserToAppUserResponseDto(appUserRepo.save(appUser));
 	}
 
@@ -238,7 +226,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Boolean existsByUsername(String email) {
-		
 		return appUserRepo.existsByUsername(email);
 	}
 	
