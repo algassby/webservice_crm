@@ -111,7 +111,7 @@ public class ServiceCreateUserImpl implements ServiceCreateUser {
 				", ",
 				"Your admin account is created successFully.",
 				newLine,
-				"Here your username and your userKey to allowed you to management Organization and customer:",
+				"Here your username and your userKey api to allowed you to manage administrator, organizations and customers.",
 				newLine,
 				"username: ",
 				appUser.getUsername(),

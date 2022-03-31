@@ -38,7 +38,7 @@ public class AppUserResponseDto {
 	private  String email;
 	private  String username;
 	@JsonProperty(access = Access.WRITE_ONLY)
-    private String password;
+    private String userKey;
     private Set<AppRole> roles = new HashSet<>();
     @JsonProperty(access = Access.WRITE_ONLY)
     private String adminId;
