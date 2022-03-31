@@ -80,7 +80,6 @@ public class Customer implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "orga_id", nullable = true)
 	private Organization organization;
-	
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "customer")
 	private Set<FileInfo> fileInfos =  new HashSet<>();
 	

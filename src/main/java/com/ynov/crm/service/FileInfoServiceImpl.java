@@ -14,11 +14,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +58,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * @author algas
  *
@@ -71,6 +74,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 	private FileInfoMapper fileInfoMapper;
 	private CustomerRepository customerRepo;
 	private final Path root = Paths.get("uploads");
+	private UserPrinciple currentUser;
 	
 	/**
 	 * @param fileInfoRepository
@@ -83,6 +87,9 @@ public class FileInfoServiceImpl implements FileInfoService {
 		this.customerRepo = customerRepo;
 	}
    
+	public void initCurrentUser(){
+		 currentUser  =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	}
 
     @Override
     public void init() {
@@ -226,11 +233,10 @@ public class FileInfoServiceImpl implements FileInfoService {
 				  image.setCustomer(null);
 				  fileInfoRepository.deleteById(image.getFileId());
 			  });
-			  //fileInfoRepository.deleteAll();
+			  
 			  
 			 fileInfoRepository.removeAll();
 				
-				//fileInfoRepository.deleteById(fileInfo.getFileId());
 
 				try {
 					Files.walk(path)
@@ -245,7 +251,6 @@ public class FileInfoServiceImpl implements FileInfoService {
 		  }
 		  return "failed delete user directory";
 		
-//		FileSystemUtils.deleteRecursively(root.toFile());
 	}
 	
 	 @Override
@@ -260,25 +265,37 @@ public class FileInfoServiceImpl implements FileInfoService {
 		@Override
 		public List<FileInfoResponseDto> findAllFile(Integer pageNo, Integer pageSize,
 				String sortBy) {
+			this.init();
 			Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 			 
 	        Page<FileInfo> pagedResult = fileInfoRepository.findAll(paging);
-			return pagedResult.getContent()
+	        List<FileInfo> images = new ArrayList<>();
+			 pagedResult.getContent().forEach(image->{
+						if(currentUser.getUsername().equals("admin") || currentUser.getUserId().equals(image.getCustomer().getOrganization().getAdminId())) {
+							images.add(image);
+						}
+
+					});
+			 return 
+					images
 					.stream()
-					.map(image->{
-						
-						FileInfoResponseDto fileInfoDto  = fileInfoMapper.fileInfoToFileInfoResponseDto(image);
-						
-						return fileInfoDto;
-					})
+					.map(image->fileInfoMapper.fileInfoToFileInfoResponseDto(image))
 					.collect(Collectors.toList());
 		}
 		@Override
 		public List<FileInfoResponseDto> findAllFileByCustomer(String customerId) {
-			
-			 return fileInfoRepository.findAllFileByCustomer(customerId)
-					 .stream()
-					 .map(image->fileInfoMapper.fileInfoToFileInfoResponseDto(image))
+			this.initCurrentUser();
+			List<FileInfo> images = new Vector<>();
+			  fileInfoRepository.findAllFileByCustomer(customerId)
+					 
+					 .forEach(image->{
+						
+						if(image.getCustomer().getOrganization().getAdminId().equals(currentUser.getUserId()) || currentUser.getUsername().equals("admin")) {
+							images.add(image);
+						}
+					 });
+					return  images.stream()
+							.map(image->fileInfoMapper.fileInfoToFileInfoResponseDto(image))
 					 .collect(Collectors.toList());
 				
 		}
@@ -300,7 +317,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 				log.info("ok else");
 			
 			}
-			
+		
 		    Customer customer = customerRepo.findById(customerId).get();
 		    Path rootUserDirectory = Paths.get(new StringBuilder().append(this.root.toString()).append(File.separatorChar).append(customer.getCustomerId()).toString());
 		    log.info(rootUserDirectory.toString());

@@ -6,6 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -22,28 +23,34 @@ import lombok.experimental.Accessors;
 
 public class AppUserRequestDto {
 
-
-	@NotEmpty
+	@NotEmpty(message = "Not be empty")
+	@NotBlank(message = "Not Valid")
+	@Size(min = 3, max = 60)
 	private  String firstName;
 	
 
-	@NotEmpty
+	@NotEmpty(message = "Not be empty")
+	@NotBlank(message = "Not valid")
+	@Size(min = 3, max = 60)
 	private  String lastName;
 	
-	@NotEmpty
-	@Email
+	@NotEmpty(message = "Not be empty")
+	@NotBlank(message = "Email not valid")
+	@Size(min = 3, max = 60, message = "Email too long")
+	@Email(message = "Email not valid")
 	private  String email;
 
-	@NotEmpty
+
+	@NotEmpty(message = "Not be empty")
+	@NotBlank(message = "username not valid")
+	@Size(min = 3, max = 60, message = "username too long")
 	private  String username;
 
 //	@NotBlank
 //	@JsonProperty(access = Access.WRITE_ONLY)
 //    private String userKey;
 
-	@NotEmpty
-	@NotBlank
-	@NotNull
+	@Size(max = 15, message = "role too long")
 	private String roleName;
     
 }

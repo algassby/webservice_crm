@@ -3,10 +3,7 @@
  */
 package com.ynov.crm.service;
 
-import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,12 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import com.ynov.crm.config.JwtProvider;
 import com.ynov.crm.repository.AppRoleRepository;
-import com.ynov.crm.repository.AppUserRepository;
 import com.ynov.crm.requestdto.LoginForm;
 import com.ynov.crm.responsedto.JwtResponse;
 

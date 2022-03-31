@@ -3,6 +3,7 @@
  */
 package com.ynov.crm.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ynov.crm.repository.AppUserRepository;
@@ -27,6 +28,7 @@ public class UserExistByFieldService {
 	/**
 	 * @param appUserRepo
 	 */
+	@Autowired
 	public UserExistByFieldService(AppUserRepository appUserRepo) {
 		super();
 		this.appUserRepo = appUserRepo;
@@ -38,6 +40,9 @@ public class UserExistByFieldService {
 	}
 	public Boolean existsByEmail(String email) {
 		return appUserRepo.existsByEmail(email);
+	}
+	public Boolean existsById(String userId) {
+		return appUserRepo.existsById(userId);
 	}
 
 }

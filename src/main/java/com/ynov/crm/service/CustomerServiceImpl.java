@@ -55,9 +55,6 @@ public class CustomerServiceImpl implements CustomerService {
 	private CustomerMapper customerMapper;
 	private OrganizationRepository organizationRepo;
 	private FileInfoService fileService;
-
-	private MailService mailService;
-
 	private UserPrinciple currentUser;
 	private CheckAccessAdmin checkAccessAdmin;
 	
@@ -66,12 +63,10 @@ public class CustomerServiceImpl implements CustomerService {
 	 * @param customerMapper
 	 */
 	@Autowired
-
 	public CustomerServiceImpl(CustomerRepository customerRepo,
 							   CustomerMapper customerMapper,
 							   OrganizationRepository organizationRepo,
 							   FileInfoService fileService,
-							   MailService mailService,
 							   CheckAccessAdmin checkAccessAdmin
 							   )
 	{
@@ -80,12 +75,11 @@ public class CustomerServiceImpl implements CustomerService {
 		this.customerMapper = customerMapper;
 		this.organizationRepo = organizationRepo;
 		this.fileService = fileService;
-		this.mailService = mailService;
 		this.checkAccessAdmin = checkAccessAdmin;
 		this.fileService.init();
 	}
 	public void initCurrentUser(){
-		 currentUser  =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication(). getPrincipal();
+		 currentUser  =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 	@Override
 	public List<CustomerResponseDto> getAllCustomer(Integer pageNo, Integer pageSize,
@@ -93,11 +87,13 @@ public class CustomerServiceImpl implements CustomerService {
 		this.initCurrentUser();
 		Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 		List<Customer> customers = new Vector<>();
-		log.debug(currentUser.toString());
+		log.info(currentUser.toString());
 		Page<Customer> pagedResult = customerRepo.findAll(paging);
 		pagedResult.forEach(customer->{
-			log.debug(customer.getOrganization().getAdminId());
+			log.info(customer.getOrganization().getAdminId());
+			log.info(String.valueOf(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)));
 			if(currentUser!=null) {
+				log.info(customer.getOrganization().toString());
 				if(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)) {
 					customers.add(customer);
 				}
@@ -127,19 +123,21 @@ public class CustomerServiceImpl implements CustomerService {
 		if(!customerRepo.existsById(customerId)) {
 			return new CustomerResponseDto();
 		}
-		Customer customer = customerRepo.findById(customerId).get();
-		if(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)) {
-			return customerMapper.customerToCustomerResponseDto(customer);
+		else {
+			Customer customer = customerRepo.findById(customerId).get();
+			if(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)) {
+				return customerMapper.customerToCustomerResponseDto(customer);
+			}
+			return new CustomerResponseDto();
+			
 		}
-		
-		return new CustomerResponseDto();
+
 		
 	}
 
 	@Override
 	public CustomerResponseDto save(CustomerRequestDto customerRequestDto) {
 		
-
 		Customer customer = customerMapper.customerRequestDtoToCustomer(customerRequestDto);
 		
 		if(organizationRepo.existsById(customerRequestDto.getOrgaId())) {
@@ -162,8 +160,7 @@ public class CustomerServiceImpl implements CustomerService {
 			customer.setOrganization(organizationRepo.findById(customerRequestDto.getOrgaId()).get());
 		}
 	
-		
-		if(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)) {
+		if(checkAccessAdmin.checkAccess(customer.getOrganization().getAppUser().getUserId(), currentUser)) {
 			
 			customer.setFirstName(customerRequestDto.getFirstName()).setLastName(customerRequestDto.getLastName())
 			.setPhoneNumer(customerRequestDto.getPhoneNumer());

@@ -179,25 +179,17 @@ public class UserServiceImpl implements UserService {
 		AppUser appUser =  appUserRepo.findById(userId).get();
 		if(this.currentUser.getUserId().equals(appUser.getUserId())) {
 			if(userDto.getRoleName()!=null) {
-				if(!userDto.getRoleName().isEmpty()) {
-					appUser.addRole(appRoleRepo.findByRoleName(userDto.getRoleName()));
-					log.info(appRoleRepo.findByRoleName(userDto.getRoleName()).toString());
-				}
-				else {
-					AppRole role = appRoleRepo.findByRoleName("ROLE_USER");
-					appUser.addRole(role);
-					log.info(role.toString());
-				}
-			}
-			else {
+				appUser.addRole(appRoleRepo.findByRoleName(userDto.getRoleName()));
 				AppRole role = appRoleRepo.findByRoleName("ROLE_USER");
 				appUser.addRole(role);
-				log.info(role.toString());
-			}
-			log.info(appUser.getRoles().toString());
+				log.debug(role.toString());
+				log.debug(appUser.getRoles().toString());
+				
+			  }
 			appUser.setUsername(userDto.getUsername()).setFirstName(userDto.getFirstName()).setLastName(userDto.getLastName()).setEmail(userDto.getEmail())
 			.setLastUpdate(new Date()).setAdminId(currentUser.getUserId());
 			return userMapper.appUserToAppUserResponseDto(appUserRepo.save(appUser));
+
 		}
 		return new AppUserResponseDto();
 		

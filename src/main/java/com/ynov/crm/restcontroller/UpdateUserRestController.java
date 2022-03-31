@@ -1,48 +1,70 @@
+/**
+ * 
+ */
 package com.ynov.crm.restcontroller;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ynov.crm.config.JwtProvider;
-import com.ynov.crm.enties.AppRole;
-import com.ynov.crm.enties.AppUser;
-import com.ynov.crm.repository.AppRoleRepository;
-import com.ynov.crm.repository.AppUserRepository;
 import com.ynov.crm.requestdto.AppUserRequestDto;
-import com.ynov.crm.requestdto.LoginForm;
-import com.ynov.crm.responsedto.JwtResponse;
+import com.ynov.crm.responsedto.AppUserResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
-import com.ynov.crm.service.AuthServiceImpl;
+import com.ynov.crm.service.UserService;
 
-@CrossOrigin(origins = "*", maxAge = 3600,allowedHeaders = "*")
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author algas
+ *
+ */
 @RestController
-@RequestMapping("/api/auth")
-public class AuthRestController {
-
-	@Autowired
-	private AuthServiceImpl authServiceImpl;
+@RequestMapping("/api/users")
+@CrossOrigin(origins = "*", maxAge = 3600)
+@Slf4j
+@Validated
+public class UpdateUserRestController {
 	
+	private UserService userService;
 
-	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginRequest) {
-		return ResponseEntity.ok(authServiceImpl.signin(loginRequest));
+	/**
+	 * @param userService
+	 * @param dateManagement
+	 */
+	@Autowired
+	public UpdateUserRestController(UserService userService) {
+		super();
+		this.userService = userService;
+
+
+	}
+	@PutMapping("/{userId}/update")
+	@ExceptionHandler(ConstraintViolationException.class)
+	ResponseEntity<?> update(@Valid @RequestBody AppUserRequestDto userDto, @PathVariable String userId){
+		if(!userService.existsById(userId)){
+			return new ResponseEntity<>(new ResponseMessage("User not found"),HttpStatus.NOT_FOUND);
+		}
+		AppUserResponseDto user =  userService.update(userDto, userId);
+		
+		return  (user.getUserId()!=null?  new ResponseEntity<>(user,HttpStatus.OK) :
+			new ResponseEntity<>(new ResponseMessage("Cannot Update user, please verify the user information"),HttpStatus.BAD_REQUEST)) ;
 	}
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -55,6 +77,6 @@ public class AuthRestController {
         });
         return errors;
     }
-
+	
 
 }

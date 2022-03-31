@@ -137,8 +137,7 @@ public class OrganizationServiceImpl implements OrganizationService{
 		this.initCurrentUser();
 		AppUser user = userRepository.findByUsername(getCurrentUser().getUsername()).get();
 		Organization organizationSaved = organisationMapper
-				.OrganisationRequestDtoToOrganization(organizationRequestDto).setAdminId(userRepository.findByUsername(user.getUsername())
-						.get().getUserId()).setAppUser(user);
+				.OrganisationRequestDtoToOrganization(organizationRequestDto).setAdminId(user.getUserId()).setAppUser(user);
 		
 		return organisationMapper
 				.OrganisationToOrganizationResponseDto
