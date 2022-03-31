@@ -14,8 +14,8 @@ Ynov projet master webservice
 # Un utilisation ayant les informations:
 * username:admin
 * userKey:123456789
-Il va vous permettre de creer les autres admin, des organisations, des clients, des customers et rajouter des photos pour le customers.
+<p>Il va vous permettre de creer les autres admin, des organisations, des clients, des customers et rajouter des photos pour le customers.
 les images des customers crées sont enregistrées dans dans dossier uploads/customerId.
-Chaque customers aura son propre repertoire (identificant) pour stocker ses photos.
+Chaque customers aura son propre repertoire (identificant) pour stocker ses photos.</p>
 
 
