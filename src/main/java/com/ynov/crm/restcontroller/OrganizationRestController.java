@@ -33,14 +33,14 @@ public class OrganizationRestController {
 
 	@PostMapping("/save")
 	public ResponseEntity<?> saveOrganization(@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
-	
-		return new ResponseEntity<>(organizationService.save(organizationRequestDto),HttpStatus.CREATED);
+		return organizationService.save(organizationRequestDto);
 	}
 	
 	@GetMapping
 	public ResponseEntity<?> getAllOrganization(@RequestParam(required = false, defaultValue = "0") Integer pageNo, @RequestParam( defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "name", required = false) String sortBy) {
-		return new ResponseEntity<>(organizationService.findAll(pageNo, pageSize, sortBy), HttpStatus.OK);
+		return organizationService.findAll(pageNo, pageSize, sortBy);
 	}
+	
 	@GetMapping("/users/{userId}")
 	public ResponseEntity<?>findAllByAdminId(@PathVariable String userId, @RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize,@RequestParam(defaultValue = "name", required = false) String sortBy) {
 		try {
@@ -48,6 +48,8 @@ public class OrganizationRestController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		
+		
 		
 	}
 	

@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -28,19 +30,19 @@ import com.ynov.crm.utils.CheckAccessAdmin;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
 @Data
 @Service
 @Transactional
 @Slf4j
-public class OrganizationServiceImpl implements OrganizationService{
-	
+public class OrganizationServiceImpl implements OrganizationService {
+
 	private OrganizationRepository organizationRepository;
 	private AppUserRepository userRepository;
 	private OrganisationMapper organisationMapper;
-    private CheckAccessAdmin checkAccessAdmin;
-    private UserPrinciple currentUser;
-	
-	
+	private CheckAccessAdmin checkAccessAdmin;
+	private UserPrinciple currentUser;
+
 	public OrganizationServiceImpl(OrganizationRepository organizationRepository, AppUserRepository userRepository,
 			OrganisationMapper organisationMapper, CheckAccessAdmin checkAccessAdmin) {
 		super();
@@ -48,14 +50,13 @@ public class OrganizationServiceImpl implements OrganizationService{
 		this.userRepository = userRepository;
 		this.organisationMapper = organisationMapper;
 		this.checkAccessAdmin = checkAccessAdmin;
-		
 
-		
 	}
-	public void initCurrentUser(){
-		 currentUser  =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication(). getPrincipal();
+
+	public void initCurrentUser() {
+		currentUser = (UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
-	
+
 	@Override
 	public Boolean existsByName(String name) {
 		return organizationRepository.existsByName(name);
@@ -63,160 +64,128 @@ public class OrganizationServiceImpl implements OrganizationService{
 
 	@Override
 	public OrganizationResponsDto findByName(String name) {
-		return (organizationRepository.existsByName(name))?
-				organisationMapper.OrganisationToOrganizationResponseDto(organizationRepository.findByName(name)):
-					null;
+		return (organizationRepository.existsByName(name))
+				? organisationMapper.OrganisationToOrganizationResponseDto(organizationRepository.findByName(name))
+				: null;
 	}
 
 	@Override
 	public OrganizationResponsDto getOrganization(String orgId) {
 		this.initCurrentUser();
-		if(organizationRepository.existsById(orgId)) {
-			Organization  organization= organizationRepository.findById(orgId).get();
-			if(checkAccessAdmin.checkAccess(organization.getAdminId(), currentUser)) {
-				return organisationMapper.OrganisationToOrganizationResponseDto(organization); 
+		if (organizationRepository.existsById(orgId)) {
+			Organization organization = organizationRepository.findById(orgId).get();
+			if (checkAccessAdmin.checkAccess(organization.getAdminId(), currentUser)) {
+				return organisationMapper.OrganisationToOrganizationResponseDto(organization);
 			}
 		}
-		
+
 		return new OrganizationResponsDto();
-		
+
 	}
 
 	@Override
-	public List<OrganizationResponsDto> findAll(Integer pageNo, Integer pageSize, String sortBy) {
+	public ResponseEntity<?> findAll(Integer pageNo, Integer pageSize, String sortBy) {
 		this.initCurrentUser();
 		log.debug(organizationRepository.findAll().toString());
 		Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 		Page<Organization> pagedResult = organizationRepository.findAll(paging);
 		List<Organization> organizations = new Vector<>();
-		
-		pagedResult.forEach(organization->{
-			if(checkAccessAdmin.checkAccess(organization.getAdminId(), currentUser)) {
+
+		pagedResult.forEach(organization -> {
+			if (checkAccessAdmin.checkAccess(organization.getAdminId(), currentUser)) {
 				organizations.add(organization);
 			}
-	
+
 		});
-		return organizations
-				.stream()
+		List<OrganizationResponsDto> OrganizationResponseDtos =organizations.stream()
 				.map(organization -> organisationMapper.OrganisationToOrganizationResponseDto(organization))
 				.collect(Collectors.toList());
 		
-		
+		return new ResponseEntity<Object>(OrganizationResponseDtos,HttpStatus.CREATED);
+
 	}
-	
+
 	@Override
-	public List<OrganizationResponsDto> findAllByAdminId(String userId, Integer pageNo, Integer pageSize,String sortBy) {
+	public List<OrganizationResponsDto> findAllByAdminId(String userId, Integer pageNo, Integer pageSize,
+			String sortBy) {
 		this.initCurrentUser();
 		log.debug(organizationRepository.findAll().toString());
 		Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 		Page<Organization> pagedResult = null;
 		List<Organization> organizations = new Vector<>();
-		if(userId == null) {
+		if (userId == null) {
 			pagedResult = organizationRepository.findAll(paging);
-		}
-		else {
+		} else {
 			pagedResult = organizationRepository.findAllByAdminId(userId, paging);
 		}
-		
+
 		List<Organization> organiz = pagedResult.getContent();
-		organiz.forEach(organization->{
-			if(checkAccessAdmin.checkAccess(organization.getAdminId(), currentUser)) {
+		organiz.forEach(organization -> {
+			if (checkAccessAdmin.checkAccess(organization.getAdminId(), currentUser)) {
 				organizations.add(organization);
 			}
-	
+
 		});
-		return organizations
-				.stream()
+		return organizations.stream()
 				.map(organization -> organisationMapper.OrganisationToOrganizationResponseDto(organization))
 				.collect(Collectors.toList());
-		
+
 	}
 
 	@Override
-	public OrganizationResponsDto save(OrganizationRequestDto organizationRequestDto) {
+	public ResponseEntity<Object> save(OrganizationRequestDto organizationRequestDto) {
 		this.initCurrentUser();
 		AppUser user = userRepository.findByUsername(getCurrentUser().getUsername()).get();
-		Organization organizationSaved = organisationMapper
-				.OrganisationRequestDtoToOrganization(organizationRequestDto).setAdminId(userRepository.findByUsername(user.getUsername())
-						.get().getUserId()).setAppUser(user);
-		
-		return organisationMapper
-				.OrganisationToOrganizationResponseDto
-				(organizationRepository.save(organizationSaved));
+		Organization organizationSaved = organisationMapper.OrganisationRequestDtoToOrganization(organizationRequestDto)
+				.setAdminId(userRepository.findByUsername(user.getUsername()).get().getUserId()).setAppUser(user);
+
+		OrganizationResponsDto OrganizationResponsDto = organisationMapper
+				.OrganisationToOrganizationResponseDto(organizationRepository.save(organizationSaved));
+
+		return new ResponseEntity<Object>(OrganizationResponsDto, HttpStatus.CREATED);
 	}
 
 	@Override
 	public OrganizationResponsDto update(OrganizationRequestDto organizationRequestDto, String orgaId) {
 		this.initCurrentUser();
 		Organization organization = organizationRepository.findById(orgaId).get();
-		if(this.getCheckAccessAdmin().checkAccess(organization.getAdminId(), getCurrentUser())) {
-			
+		if (this.getCheckAccessAdmin().checkAccess(organization.getAdminId(), getCurrentUser())) {
+
 			Organization organizationUpdated = organizationRepository.findById(orgaId).get();
 			organizationUpdated.setName(organizationRequestDto.getName())
-			.setAddress(organizationRequestDto.getAddress())
-			.setLogo(organizationRequestDto.getLogo())
-			.setNbSalaris(organizationRequestDto.getNbSalaris());
-			
-			
+					.setAddress(organizationRequestDto.getAddress()).setLogo(organizationRequestDto.getLogo())
+					.setNbSalaris(organizationRequestDto.getNbSalaris());
+
 			return organisationMapper
-					.OrganisationToOrganizationResponseDto
-					(organizationRepository.save(organizationUpdated));
+					.OrganisationToOrganizationResponseDto(organizationRepository.save(organizationUpdated));
 		}
-		
+
 		return new OrganizationResponsDto();
-		
-		
+
 	}
 
 	@Override
 	public String remove(String orgaId) {
 		this.initCurrentUser();
-		
+
 		if (organizationRepository.existsById(orgaId)) {
 			Organization organization = organizationRepository.findById(orgaId).get();
-			if(checkAccessAdmin.checkAccess(organization.getAdminId(), this.currentUser)) {
+			if (checkAccessAdmin.checkAccess(organization.getAdminId(), this.currentUser)) {
 				organizationRepository.deleteById(orgaId);
 				return "remove organization successfully";
-			}
-			else {
+			} else {
 				return "The admin cannot remove this  organization!";
 			}
 
-		}else {
+		} else {
 			return "remove organization fail";
 		}
 
-		
 	}
+
 	@Override
 	public Boolean existsById(String orgaId) {
-		
+
 		return organizationRepository.existsById(orgaId);
 	}
-	
- 
-//	@Override
-//	public String addCustomerToOrganization(String orgaName, String userName) {
-//	Organization organization = organizationRepository
-//		.findByName(userName);
-//	organization.getUsers()
-//	.add(userRepository.findByUsername(userName).get());
-//		organizationRepository.save(organization);
-//		
-//		return "add customer" +userName+" to organisation "+orgaName+" successfully";
-//		
-//	}
-//
-//	@Override
-//	public String removeCustomerToOrganization(String orgaName, String userName) {
-//		
-//		Organization organization = organizationRepository
-//				.findByName(userName);
-//		
-//		organization.getUsers().removeIf(user->user.getUsername().equals(userName));
-//		organizationRepository.save(organization);
-//		
-//		return "remove customer" +userName+" to organisation "+orgaName+" successfully";
-//	}
-
 }

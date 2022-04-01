@@ -3,8 +3,7 @@ package com.ynov.crm;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,8 +11,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.ynov.crm.enties.AppRole;
 import com.ynov.crm.enties.AppUser;
@@ -50,7 +47,7 @@ public class WebserviceCrmApplication {
 				Set<AppRole> roles = new HashSet<>();
 				roles.add(roleDao.findByRoleName("ROLE_ADMIN"));
 				
-				//user.setUserId(UUID.randomUUID().toString());
+				user.setUserId(UUID.randomUUID().toString());
 				user.setEmail("admin@admin.com").setFirstName("admin").setLastName("admin").setPassword(encoder.encode("123456789")).setUsername("admin")
 				.setRoles(roles).setLastUpdate(new Date()).setAdminId(user.getUserId());
 			
