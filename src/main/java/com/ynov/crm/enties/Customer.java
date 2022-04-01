@@ -82,8 +82,7 @@ public class Customer implements Serializable {
 	private Organization organization;
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "customer")
 	private Set<FileInfo> fileInfos =  new HashSet<>();
-	
-	
+
 	 public Customer removeImage(FileInfo fileInfo)
      {
           fileInfos.remove(fileInfo);

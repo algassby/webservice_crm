@@ -24,8 +24,8 @@ public interface FileInfoService {
     public FileInfo getFile(String fileId);
     public Boolean existsByFileName(String fileName);
     public byte[] getPhoto(String fileId)throws Exception;
-    public String deleteFile(String fileName, String customerId);
-    public String deleteCustomerDirectory(String customerId);
+    public String deleteFile(String fileName, String objectId);
+    public String deleteObjectDirectory(String objectId);
     public  String deleteFileWithUser(String fileName);
     public Resource load(String filename);
     public Stream<Path> loadAll();
@@ -33,5 +33,6 @@ public interface FileInfoService {
     public List<FileInfoResponseDto> findAllFile(Integer pageNo, Integer pageSize, String sortBy);
     public List<FileInfoResponseDto> findAllFileByCustomer(String customerId);
     public FileInfo uploadToLocalFileSystem(String customerId, MultipartFile file);
+    public FileInfo uploadToLocalFileSystemForOrganization(String objectId, MultipartFile file);
  
 }

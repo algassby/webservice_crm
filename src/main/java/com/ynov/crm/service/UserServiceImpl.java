@@ -45,7 +45,6 @@ public class UserServiceImpl implements UserService {
 	private AppUserRepository appUserRepo;
 	private UserMapper userMapper;
 	private AppRoleRepository  appRoleRepo;
-	private FileInfoService fileService;
 	private String subject;
 	private MailService mailService;
 	private UserPrinciple currentUser;
@@ -66,14 +65,12 @@ public class UserServiceImpl implements UserService {
 	public UserServiceImpl(AppUserRepository appUserRepo,
 						   UserMapper userMapper,
 						   AppRoleRepository appRoleRepo,
-						   FileInfoService fileService,
 						   MailService mailService
 						   ) {
 		super();
 		this.appUserRepo = appUserRepo;
 		this.userMapper = userMapper;
 		this.appRoleRepo = appRoleRepo;
-		this.fileService = fileService;
 		this.mailService = mailService;
 	
 	}

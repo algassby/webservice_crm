@@ -15,6 +15,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -66,7 +68,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public CustomerServiceImpl(CustomerRepository customerRepo,
 							   CustomerMapper customerMapper,
 							   OrganizationRepository organizationRepo,
-							   FileInfoService fileService,
+							   @Qualifier("FileInfoServiceImpl")  FileInfoService fileService,
 							   CheckAccessAdmin checkAccessAdmin
 							   )
 	{
@@ -183,7 +185,7 @@ public class CustomerServiceImpl implements CustomerService {
 			if(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)) {
 				log.info(customer.toString());
 				log.info(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser).toString());
-				fileService.deleteCustomerDirectory(customerId);
+				fileService.deleteObjectDirectory(customerId);
 //				customer.getFileInfos().stream().forEach(file->{
 //					
 //				});

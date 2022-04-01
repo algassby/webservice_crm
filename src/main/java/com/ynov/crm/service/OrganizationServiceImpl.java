@@ -1,21 +1,21 @@
 package com.ynov.crm.service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.apache.tomcat.jni.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.enties.Organization;
@@ -37,20 +37,23 @@ public class OrganizationServiceImpl implements OrganizationService{
 	private OrganizationRepository organizationRepository;
 	private AppUserRepository userRepository;
 	private OrganisationMapper organisationMapper;
+	private FileInfoService fileInfoService;
     private CheckAccessAdmin checkAccessAdmin;
     private UserPrinciple currentUser;
 	
 	
+    @Autowired
 	public OrganizationServiceImpl(OrganizationRepository organizationRepository, AppUserRepository userRepository,
-			OrganisationMapper organisationMapper, CheckAccessAdmin checkAccessAdmin) {
+			OrganisationMapper organisationMapper, CheckAccessAdmin checkAccessAdmin, @Qualifier(value = "FileInforServiceOrganization") FileInfoService fileInfoService) {
 		super();
 		this.organizationRepository = organizationRepository;
 		this.userRepository = userRepository;
 		this.organisationMapper = organisationMapper;
+		this.fileInfoService = fileInfoService;
 		this.checkAccessAdmin = checkAccessAdmin;
 		
+		this.getFileInfoService().init();
 
-		
 	}
 	public void initCurrentUser(){
 		 currentUser  =  (UserPrinciple) SecurityContextHolder.getContext().getAuthentication(). getPrincipal();
@@ -85,17 +88,17 @@ public class OrganizationServiceImpl implements OrganizationService{
 	@Override
 	public List<OrganizationResponsDto> findAll(Integer pageNo, Integer pageSize, String sortBy) {
 		this.initCurrentUser();
-		log.debug(organizationRepository.findAll().toString());
+		log.info(organizationRepository.findAll().toString());
 		Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 		Page<Organization> pagedResult = organizationRepository.findAll(paging);
 		List<Organization> organizations = new Vector<>();
-		
-		pagedResult.forEach(organization->{
-			if(checkAccessAdmin.checkAccess(organization.getAdminId(), currentUser)) {
+		pagedResult.getContent().forEach(organization->{
+			if(currentUser.getUserId().equals(organization.getAdminId())) {
 				organizations.add(organization);
 			}
 	
 		});
+		log.info(pagedResult.toString());
 		return organizations
 				.stream()
 				.map(organization -> organisationMapper.OrganisationToOrganizationResponseDto(organization))
@@ -133,11 +136,16 @@ public class OrganizationServiceImpl implements OrganizationService{
 	}
 
 	@Override
-	public OrganizationResponsDto save(OrganizationRequestDto organizationRequestDto) {
+	public OrganizationResponsDto save(OrganizationRequestDto organizationRequestDto, MultipartFile file) {
 		this.initCurrentUser();
 		AppUser user = userRepository.findByUsername(getCurrentUser().getUsername()).get();
-		Organization organizationSaved = organisationMapper
-				.OrganisationRequestDtoToOrganization(organizationRequestDto).setAdminId(user.getUserId()).setAppUser(user);
+		Organization organizationSaved = organizationRepository.save(
+				organisationMapper
+				.OrganisationRequestDtoToOrganization(organizationRequestDto).setAdminId(user.getUserId()).setAppUser(user));
+		if(file!=null) {
+	
+			this.getFileInfoService().uploadToLocalFileSystem(organizationSaved.getOrgaId(), file);
+		}
 		
 		return organisationMapper
 				.OrganisationToOrganizationResponseDto
@@ -145,7 +153,7 @@ public class OrganizationServiceImpl implements OrganizationService{
 	}
 
 	@Override
-	public OrganizationResponsDto update(OrganizationRequestDto organizationRequestDto, String orgaId) {
+	public OrganizationResponsDto update(OrganizationRequestDto organizationRequestDto, String orgaId, MultipartFile file) {
 		this.initCurrentUser();
 		Organization organization = organizationRepository.findById(orgaId).get();
 		if(this.getCheckAccessAdmin().checkAccess(organization.getAdminId(), getCurrentUser())) {
@@ -155,11 +163,15 @@ public class OrganizationServiceImpl implements OrganizationService{
 			.setAddress(organizationRequestDto.getAddress())
 			.setLogo(organizationRequestDto.getLogo())
 			.setNbSalaris(organizationRequestDto.getNbSalaris());
-			
-			
+			if(file!=null){
+
+				 organizationUpdated.setFileInfo(getFileInfoService().uploadToLocalFileSystem(organizationUpdated.getOrgaId(), file));
+
+			}
 			return organisationMapper
 					.OrganisationToOrganizationResponseDto
-					(organizationRepository.save(organizationUpdated));
+					(organizationRepository.save(organizationUpdated));			
+
 		}
 		
 		return new OrganizationResponsDto();
@@ -174,6 +186,7 @@ public class OrganizationServiceImpl implements OrganizationService{
 		if (organizationRepository.existsById(orgaId)) {
 			Organization organization = organizationRepository.findById(orgaId).get();
 			if(checkAccessAdmin.checkAccess(organization.getAdminId(), this.currentUser)) {
+				this.fileInfoService.deleteObjectDirectory(orgaId);
 				organizationRepository.deleteById(orgaId);
 				return "remove organization successfully";
 			}

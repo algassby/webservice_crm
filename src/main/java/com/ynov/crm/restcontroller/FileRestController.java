@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,44 +29,70 @@ import com.ynov.crm.service.FileInfoService;
  *
  */
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 @RequestMapping("/api/files")
 public class FileRestController {
 
-	private FileInfoService fileInfoService;
+	
+	private FileInfoService fileInfoServiceImpl;
+	private FileInfoService fileInfoServiceOrga;
 
 	/**
 	 * @param fileInfoService
 	 */
 	@Autowired
-	public FileRestController(FileInfoService fileInfoService) {
+	public FileRestController(@Qualifier(value = "FileInfoServiceImpl") FileInfoService fileInfoServiceImpl,
+			@Qualifier(value = "FileInforServiceOrganization") FileInfoService fileInfoServiceOrga) {
 		super();
-		this.fileInfoService = fileInfoService;
+		this.fileInfoServiceImpl = fileInfoServiceImpl;
+		this.fileInfoServiceOrga = fileInfoServiceOrga;
 	}
 	@GetMapping
 	public ResponseEntity<?> findAllFile(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "10")
 	Integer pageSize, @RequestParam(defaultValue = "lastUpdate")  String sortBy) {
-		return new ResponseEntity<>(fileInfoService.findAllFile(pageNo, pageSize, sortBy), HttpStatus.OK);
+		return new ResponseEntity<>(fileInfoServiceImpl.findAllFile(pageNo, pageSize, sortBy), HttpStatus.OK);
 	}
 	
 	@GetMapping("/customer/{customerId}")
 	public ResponseEntity<?> findAllFileByCustomerId(@PathVariable String customerId) {
-		return new ResponseEntity<>(fileInfoService.findAllFileByCustomer(customerId), HttpStatus.OK);
+		return new ResponseEntity<>(fileInfoServiceImpl.findAllFileByCustomer(customerId), HttpStatus.OK);
 	}
-	@GetMapping("/download/{fileName:.+}")
+	@GetMapping("/customer/download/{fileName:.+}")
 	public ResponseEntity<?> downloadFileFromLocal(@PathVariable String fileName, HttpServletRequest httpRequest) {
+		
 		if(fileName==null) {
 			return ResponseEntity.ok().body(new ResponseMessage("Invalid FileName"));
 		}
-		if(!fileInfoService.existsByFileName(fileName)) {
+		if(!fileInfoServiceImpl.existsByFileName(fileName)) {
 			return ResponseEntity.ok().body(new ResponseMessage("The file doest not exits!"));
 		}
-		Resource resource =  fileInfoService.load(fileName);
+		Resource  resource =  fileInfoServiceImpl.load(fileName);
 		String contentType = null;
 		try {
 			contentType = httpRequest.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ 
+		return ResponseEntity.ok()
+				.contentType(MediaType.parseMediaType(contentType))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+				.body(resource);
+	}
+	@GetMapping("/organization/download/{fileName:.+}")
+	public ResponseEntity<?> downloadFileFromLocalOrganization(@PathVariable String fileName, HttpServletRequest httpRequest) {
+		
+		if(fileName==null) {
+			return ResponseEntity.ok().body(new ResponseMessage("Invalid FileName"));
+		}
+		if(!fileInfoServiceOrga.existsByFileName(fileName)) {
+			return ResponseEntity.ok().body(new ResponseMessage("The file doest not exits!"));
+		}
+		Resource  resource =  fileInfoServiceOrga.load(fileName);
+		String contentType = null;
+		try {
+			contentType = httpRequest.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
  

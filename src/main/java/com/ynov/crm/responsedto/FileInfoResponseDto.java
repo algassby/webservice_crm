@@ -8,7 +8,10 @@ import java.util.Date;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.ynov.crm.enties.Customer;
+import com.ynov.crm.enties.Organization;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,5 +34,7 @@ public class FileInfoResponseDto {
 	private String fileName;
 	private String fileUrl;
 	@Temporal(TemporalType.TIMESTAMP)
+	@JsonProperty(access = Access.WRITE_ONLY)
+	private Organization organization;
 	private Date lastUpdate;
 }

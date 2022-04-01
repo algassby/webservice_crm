@@ -16,8 +16,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ynov.crm.mapper.OrganisationMapper;
 import com.ynov.crm.requestdto.OrganizationRequestDto;
 import com.ynov.crm.responsedto.OrganizationResponsDto;
 import com.ynov.crm.responsedto.ResponseMessage;
@@ -32,13 +38,14 @@ public class OrganizationRestController {
 	private OrganizationService organizationService;
 
 	@PostMapping("/save")
-	public ResponseEntity<?> saveOrganization(@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
-	
-		return new ResponseEntity<>(organizationService.save(organizationRequestDto),HttpStatus.CREATED);
+	public ResponseEntity<?> saveOrganization(@Valid @RequestParam(name = "organization") String organizationRequestDto, @RequestParam(name = "file", required = false) MultipartFile file) throws JsonMappingException, JsonProcessingException {
+	 ObjectMapper orgMapper = new ObjectMapper();
+	 OrganizationRequestDto organization = orgMapper.readValue(organizationRequestDto, OrganizationRequestDto.class);
+		return new ResponseEntity<>(organizationService.save(organization, file),HttpStatus.CREATED);
 	}
 	
 	@GetMapping
-	public ResponseEntity<?> getAllOrganization(@RequestParam(required = false, defaultValue = "0") Integer pageNo, @RequestParam( defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "name", required = false) String sortBy) {
+	public ResponseEntity<?> getAllOrganization(@RequestParam(required = false, defaultValue = "0") Integer pageNo, @RequestParam( defaultValue = "5", required = false) Integer pageSize, @RequestParam(defaultValue = "name", required = false) String sortBy) {
 		return new ResponseEntity<>(organizationService.findAll(pageNo, pageSize, sortBy), HttpStatus.OK);
 	}
 	@GetMapping("/users/{userId}")
@@ -78,7 +85,7 @@ public class OrganizationRestController {
 		} 
 		if (organizationService.existsById(orgaId)) {
 			return new ResponseEntity<>(
-					organizationService.remove(orgaId), HttpStatus.OK);
+					new ResponseMessage(organizationService.remove(orgaId)), HttpStatus.OK);
 
 		} 
 			
@@ -89,14 +96,16 @@ public class OrganizationRestController {
 
 	@PutMapping(value = "/{orgaId}/update")
 	public ResponseEntity<?> updateOrganization(@Valid @PathVariable String orgaId,
-			@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
+			@Valid @RequestParam(name = "organization")  String organizationRequestDto, @RequestParam(name = "file", required = false) MultipartFile file) throws JsonMappingException, JsonProcessingException {
 		
 		if (orgaId == null) {
 			return new ResponseEntity<>(new ResponseMessage("This name of organization is empty or null."), HttpStatus.BAD_REQUEST);
 
 		} 
 		if (organizationService.existsById(orgaId)) {
-			OrganizationResponsDto organizationResponsDto = organizationService.update(organizationRequestDto, orgaId);
+			ObjectMapper orgMapper = new ObjectMapper();
+			OrganizationRequestDto organization = orgMapper.readValue(organizationRequestDto, OrganizationRequestDto.class);
+			OrganizationResponsDto organizationResponsDto = organizationService.update(organization, orgaId, file);
 			return (organizationResponsDto.getOrgaId()!=null ? new ResponseEntity<>(organizationResponsDto, HttpStatus.OK):
 						new ResponseEntity<>(new ResponseMessage("This admin cannot update the organization!"), HttpStatus.OK));
 

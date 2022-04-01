@@ -9,33 +9,30 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
  * @author algas
  *
  */
-@Entity
+@Entity(name = "FileInfo")
 @Table(name = "FileInfo")
 @Accessors(chain = true)
 @NoArgsConstructor
@@ -59,9 +56,13 @@ public class FileInfo {
 	private Long size;
 	@ManyToOne(cascade = CascadeType.PERSIST , fetch = FetchType.LAZY)
 	@JoinColumn(name = "customerId", nullable = true)
-
 	private Customer customer;
-	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "orgaId", nullable = true)
+	@JsonProperty(access = Access.WRITE_ONLY)
+	private Organization organization;
+	    
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;
+	
 }

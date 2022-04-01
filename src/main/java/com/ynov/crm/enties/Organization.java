@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
@@ -59,7 +61,7 @@ public class Organization {
 	
 	@Column(name = "Address")
 	private String address;
-	
+
 	@Column(name = "nbSalaris")
 	private int nbSalaris;
 	
@@ -78,5 +80,22 @@ public class Organization {
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "organization", targetEntity=Customer.class)
 	@Fetch(FetchMode.JOIN)
 	private Set<Customer> customers = new HashSet<>();
+	
+	@OneToOne(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private FileInfo fileInfo;
+	
+	
+	 public void setFileInfo(FileInfo fileInfo) {
+         if (fileInfo == null) {
+             if (this.fileInfo != null) {
+                 this.fileInfo.setOrganization(null);
+             }
+         }
+         else {
+        	 fileInfo.setOrganization(this);
+         }
+         this.fileInfo = fileInfo;
+     }
+ 
 	
 }

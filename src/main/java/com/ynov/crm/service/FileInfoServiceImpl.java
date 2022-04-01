@@ -30,7 +30,9 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
@@ -63,7 +65,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @author algas
  *
  */
-@Service
+@Service("FileInfoServiceImpl")
 @Transactional
 @Getter
 @Setter
@@ -74,6 +76,8 @@ public class FileInfoServiceImpl implements FileInfoService {
 	private FileInfoMapper fileInfoMapper;
 	private CustomerRepository customerRepo;
 	private final Path root = Paths.get("uploads");
+	private final Path customRoot = Paths.get(new StringBuffer().append(root.toString()).append(File.separatorChar).append("customer").toString());
+
 	private UserPrinciple currentUser;
 	
 	/**
@@ -85,6 +89,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 		this.fileInfoRepository = fileInfoRepository;
 		this.fileInfoMapper  = fileInfoMapper;
 		this.customerRepo = customerRepo;
+		
 	}
    
 	public void initCurrentUser(){
@@ -99,6 +104,13 @@ public class FileInfoServiceImpl implements FileInfoService {
     	        Files.createDirectory(root);
     	      } catch (IOException e) {
     	        throw new RuntimeException("Could not initialize folder for upload!");
+    	      }
+    	}
+    	if(Files.notExists(customRoot)) {
+    		try {
+    	        Files.createDirectory(customRoot);
+    	      } catch (IOException e) {
+    	        throw new RuntimeException("Could not initialize folder for Organization!");
     	      }
     	}
       
@@ -151,7 +163,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     @Override
     public Resource load(String filename) {
       try {
-        Path file = root.resolve(filename);
+        Path file = customRoot.resolve(filename);
         Resource resource = new UrlResource(file.toUri());
         if (resource.exists() || resource.isReadable()) {
           return resource;
@@ -166,18 +178,18 @@ public class FileInfoServiceImpl implements FileInfoService {
 	  @Override
 	  public Stream<Path> loadAll() {
 	    try {
-	    	logger.info(Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize).toString());
-	      return Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize);
+	    	//logger.info(Files.walk(this.customRoot, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize).toString());
+	      return Files.walk(customRoot, 1).filter(path -> !path.equals(customRoot)).map(this.customRoot::relativize);
 	    } catch (IOException e) {
 	      throw new RuntimeException("Could not load the files!");
 	    }
 	  }
 	@Override
-	public String deleteFile(String fileName, String customerId) {
-		log.info(root.toString());
-		 Path path = Paths.get(String.join("", root.toString(),new StringBuilder().append(File.separatorChar).append(fileName).toString()));
+	public String deleteFile(String fileName, String objectId) {
+		log.info(customRoot.toString());
+		 Path path = Paths.get(String.join("", customRoot.toString(),new StringBuilder().append(File.separatorChar).append(fileName).toString()));
 		
-		 Path rootUserDirectory = Paths.get(new StringBuilder().append(this.root.toString()).append(File.separatorChar).append(customerId).append(File.separatorChar).append(fileName).toString());
+		 Path rootUserDirectory = Paths.get(new StringBuilder().append(this.customRoot.toString()).append(File.separatorChar).append(objectId).append(File.separatorChar).append(fileName).toString());
 		 log.info(rootUserDirectory.toString());
 		 if (rootUserDirectory.toFile().exists()) {
 			   logger.debug(String.join(" "," Path =", rootUserDirectory.toString()));
@@ -201,7 +213,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 	@Override
 	public String deleteFileWithUser(String fileName) {
 		log.info(root.toString());
-		 Path path = Paths.get(String.join("", root.toString(),new StringBuilder().append(File.separatorChar).append(fileName).toString()));
+		 Path path = Paths.get(String.join("", customRoot.toString(),new StringBuilder().append(File.separatorChar).append(fileName).toString()));
 	    if (path.toFile().exists()) {
 	    	logger.info(String.join(" "," Path =", path.toString()));
 	        try {
@@ -224,20 +236,17 @@ public class FileInfoServiceImpl implements FileInfoService {
 		 
 	}
 	@Override
-	public String deleteCustomerDirectory(String customerId) {
-		Path path = Paths.get(String.join("", root.toString(),new StringBuilder().append(File.separatorChar).append(customerId).toString()));
-
+	public String deleteObjectDirectory(String objectId) {
+		Path path = Paths.get(String.join("", customRoot.toString(),new StringBuilder().append(File.separatorChar).append(objectId).toString()));
+		List<FileInfo> images = fileInfoRepository.findAllFileByCustomer(objectId);
 		log.info(path.toString());
 		  if (path.toFile().exists()) {
-			  this.fileInfoRepository.findAll().stream().forEach(image->{
+			  images.stream().forEach(image->{
 				  image.setCustomer(null);
 				  fileInfoRepository.deleteById(image.getFileId());
 			  });
 			  
-			  
-			 fileInfoRepository.removeAll();
 				
-
 				try {
 					Files.walk(path)
 					  .sorted(Comparator.reverseOrder())
@@ -266,16 +275,23 @@ public class FileInfoServiceImpl implements FileInfoService {
 		public List<FileInfoResponseDto> findAllFile(Integer pageNo, Integer pageSize,
 				String sortBy) {
 			this.init();
+			this.initCurrentUser();
 			Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 			 
 	        Page<FileInfo> pagedResult = fileInfoRepository.findAll(paging);
 	        List<FileInfo> images = new ArrayList<>();
 			 pagedResult.getContent().forEach(image->{
-						if(currentUser.getUsername().equals("admin") || currentUser.getUserId().equals(image.getCustomer().getOrganization().getAdminId())) {
-							images.add(image);
-						}
+				 if(image.getCustomer()!=null) {
+					 if(image.getCustomer().getOrganization().getAdminId()!=null) {
+						 if(currentUser.getUsername().equals("admin") || currentUser.getUserId().equals(image.getCustomer().getOrganization().getAdminId())) {
+								images.add(image);
+						} 
+					 }
+					 
+				 }
 
-					});
+				});
+						
 			 return 
 					images
 					.stream()
@@ -284,6 +300,9 @@ public class FileInfoServiceImpl implements FileInfoService {
 		}
 		@Override
 		public List<FileInfoResponseDto> findAllFileByCustomer(String customerId) {
+			if(!customerRepo.existsById(customerId)) {
+				return new Vector<>();
+			}
 			this.initCurrentUser();
 			List<FileInfo> images = new Vector<>();
 			  fileInfoRepository.findAllFileByCustomer(customerId)
@@ -319,7 +338,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 			}
 		
 		    Customer customer = customerRepo.findById(customerId).get();
-		    Path rootUserDirectory = Paths.get(new StringBuilder().append(this.root.toString()).append(File.separatorChar).append(customer.getCustomerId()).toString());
+		    Path rootUserDirectory = Paths.get(new StringBuilder().append(this.customRoot.toString()).append(File.separatorChar).append(customer.getCustomerId()).toString());
 		    log.info(rootUserDirectory.toString());
 		    if(Files.notExists(rootUserDirectory)) {
 		    	try {
@@ -341,13 +360,19 @@ public class FileInfoServiceImpl implements FileInfoService {
 			}
 			String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
 					
-					.path("/api/files/download/")
+					.path("/api/files/customer/download/")
 					.path(fileName)
 					.toUriString();
 			log.info(fileInfo.toString());
 			fileInfo.setFileName(fileName).setFileUrl(fileDownloadUri).setType(file.getContentType()).setSize(file.getSize()).setCustomer(customer).setLastUpdate(new Date());
 
 			return fileInfoRepository.save(fileInfo);
+		}
+
+		@Override
+		public FileInfo uploadToLocalFileSystemForOrganization(String objectId, MultipartFile file) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		
 

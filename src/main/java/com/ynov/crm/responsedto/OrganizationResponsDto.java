@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.enties.Customer;
+import com.ynov.crm.enties.FileInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class OrganizationResponsDto {
 	private AppUser user;
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private Set<Customer> customers = new HashSet<>();
+	private FileInfo fileInfo;
 
 
 }
