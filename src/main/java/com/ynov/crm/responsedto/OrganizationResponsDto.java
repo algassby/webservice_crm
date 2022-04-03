@@ -26,13 +26,14 @@ public class OrganizationResponsDto {
 	private String orgaId;
 	private String name;
 	private String address;
-	private int nbSalaris;	
+	private int nbSalaris;
 	private String logo;
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private AppUser user;
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private Set<Customer> customers = new HashSet<>();
 	private FileInfo fileInfo;
+	
 
 
 }
