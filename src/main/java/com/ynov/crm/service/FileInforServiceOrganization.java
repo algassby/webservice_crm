@@ -296,10 +296,13 @@ public class FileInforServiceOrganization implements FileInfoService {
 		@Override
 		public FileInfo uploadToLocalFileSystem(String objectId, MultipartFile file) {
 			  Organization organization = orgaRepo.findById(objectId).get();
-			if(fileInfoRepository.existsByFileName(file.getOriginalFilename())) {
-				fileInfoRepository.deleteById(organization.getFileInfo().getFileId());
-		
-			}
+			  if(organization.getFileInfo()!=null) {
+				  if(fileInfoRepository.existsByFileName(organization.getFileInfo().getFileName())) {
+						fileInfoRepository.deleteById(organization.getFileInfo().getFileId());
+				
+					}
+			  }
+			
 			if(organization.getFileInfo()!=null) {
 				if(fileInfoRepository.existsById(organization.getFileInfo().getFileId())) {
 					fileInfoRepository.deleteById(organization.getFileInfo().getFileId());
@@ -327,7 +330,7 @@ public class FileInforServiceOrganization implements FileInfoService {
 				}
 		    }
 		    
-			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			String fileName = StringUtils.cleanPath(new StringBuilder(organization.getOrgaId()).append("_").append(file.getOriginalFilename()).toString());
 			Path path = rootOrgaDirectory.resolve(fileName);
 		
 			try {

@@ -20,12 +20,14 @@ import com.ynov.crm.requestdto.AppointmentRequestDto;
 import com.ynov.crm.requestdto.CustomerRequestDto;
 import com.ynov.crm.service.AppointmentService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @CrossOrigin(origins = "*", maxAge = 3600, allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/appointment")
 @Slf4j
+@Tag(name = "Appointment", description = "Manage the customer appointment")
 public class ApointmentRestController {
 
 	@Autowired

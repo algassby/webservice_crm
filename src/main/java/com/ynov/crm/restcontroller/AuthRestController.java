@@ -31,9 +31,12 @@ import com.ynov.crm.responsedto.JwtResponse;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.AuthServiceImpl;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @CrossOrigin(origins = "*", maxAge = 3600,allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "contact", description = "the Contact API")
 public class AuthRestController {
 
 	@Autowired

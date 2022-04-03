@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ynov.crm.service.UserService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 @Validated
+@Tag(name = "Get All users", description = "Allowed the get All users")
 public class GetAllUserController {
 
 	private UserService userService;

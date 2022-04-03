@@ -31,6 +31,7 @@ import com.ynov.crm.service.ServiceCreateUser;
 import com.ynov.crm.service.UserExistByFieldService;
 import com.ynov.crm.utils.DateManagement;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 
 /**
@@ -41,6 +42,7 @@ import lombok.Data;
 @Data
 @CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 @RequestMapping("/api/users")
+@Tag(name = "Appointment", description = "Manage the customer appointment")
 public class CreateUserRestController {
 	
 	private ServiceCreateUser userService;

@@ -38,18 +38,22 @@ public class OrganizationServiceImpl implements OrganizationService{
 	private AppUserRepository userRepository;
 	private OrganisationMapper organisationMapper;
 	private FileInfoService fileInfoService;
+	private FileInfoService fileInfoCustomerService;
     private CheckAccessAdmin checkAccessAdmin;
     private UserPrinciple currentUser;
 	
 	
     @Autowired
 	public OrganizationServiceImpl(OrganizationRepository organizationRepository, AppUserRepository userRepository,
-			OrganisationMapper organisationMapper, CheckAccessAdmin checkAccessAdmin, @Qualifier(value = "FileInforServiceOrganization") FileInfoService fileInfoService) {
+			OrganisationMapper organisationMapper, CheckAccessAdmin checkAccessAdmin, 
+			@Qualifier(value = "FileInforServiceOrganization") FileInfoService fileInfoService,
+			@Qualifier(value = "FileInfoServiceImpl")FileInfoService fileInfoCustomerService) {
 		super();
 		this.organizationRepository = organizationRepository;
 		this.userRepository = userRepository;
 		this.organisationMapper = organisationMapper;
 		this.fileInfoService = fileInfoService;
+		this.fileInfoCustomerService = fileInfoCustomerService;
 		this.checkAccessAdmin = checkAccessAdmin;
 		
 		this.getFileInfoService().init();
@@ -91,20 +95,15 @@ public class OrganizationServiceImpl implements OrganizationService{
 		log.info(organizationRepository.findAll().toString());
 		Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 		Page<Organization> pagedResult = organizationRepository.findAll(paging);
-		List<Organization> organizations = new Vector<>();
-		pagedResult.getContent().forEach(organization->{
-			if(currentUser.getUserId().equals(organization.getAdminId())) {
-				organizations.add(organization);
-			}
-	
-		});
-		log.info(pagedResult.toString());
+		List<Organization> organizations = pagedResult.getContent().stream().filter(organization->organization.getAdminId().equals(currentUser.getUserId()))
+				.collect(Collectors.toList());
+		log.debug(String.valueOf(organizations.size()));
 		return organizations
 				.stream()
-				.map(organization -> organisationMapper.OrganisationToOrganizationResponseDto(organization))
+				.map(organization -> 
+					 organisationMapper.OrganisationToOrganizationResponseDto(organization))
 				.collect(Collectors.toList());
-		
-		
+
 	}
 	
 	@Override
@@ -143,7 +142,6 @@ public class OrganizationServiceImpl implements OrganizationService{
 				organisationMapper
 				.OrganisationRequestDtoToOrganization(organizationRequestDto).setAdminId(user.getUserId()).setAppUser(user));
 		if(file!=null) {
-	
 			this.getFileInfoService().uploadToLocalFileSystem(organizationSaved.getOrgaId(), file);
 		}
 		
@@ -164,7 +162,6 @@ public class OrganizationServiceImpl implements OrganizationService{
 			.setLogo(organizationRequestDto.getLogo())
 			.setNbSalaris(organizationRequestDto.getNbSalaris());
 			if(file!=null){
-
 				 organizationUpdated.setFileInfo(getFileInfoService().uploadToLocalFileSystem(organizationUpdated.getOrgaId(), file));
 
 			}
@@ -186,6 +183,11 @@ public class OrganizationServiceImpl implements OrganizationService{
 		if (organizationRepository.existsById(orgaId)) {
 			Organization organization = organizationRepository.findById(orgaId).get();
 			if(checkAccessAdmin.checkAccess(organization.getAdminId(), this.currentUser)) {
+				if(!organization.getCustomers().isEmpty()) {
+					organization.getCustomers().forEach(customer->{
+						fileInfoCustomerService.deleteObjectDirectory(customer.getCustomerId());
+					});
+				}
 				this.fileInfoService.deleteObjectDirectory(orgaId);
 				organizationRepository.deleteById(orgaId);
 				return "remove organization successfully";

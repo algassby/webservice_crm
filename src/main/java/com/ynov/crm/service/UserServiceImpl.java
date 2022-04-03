@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService {
 	private AppUserRepository appUserRepo;
 	private UserMapper userMapper;
 	private AppRoleRepository  appRoleRepo;
+	OrganizationService organizationService;
 	private String subject;
 	private MailService mailService;
 	private UserPrinciple currentUser;
@@ -65,12 +66,14 @@ public class UserServiceImpl implements UserService {
 	public UserServiceImpl(AppUserRepository appUserRepo,
 						   UserMapper userMapper,
 						   AppRoleRepository appRoleRepo,
+						   OrganizationService organizationService,
 						   MailService mailService
 						   ) {
 		super();
 		this.appUserRepo = appUserRepo;
 		this.userMapper = userMapper;
 		this.appRoleRepo = appRoleRepo;
+		this.organizationService =  organizationService;
 		this.mailService = mailService;
 	
 	}
@@ -197,6 +200,11 @@ public class UserServiceImpl implements UserService {
 		this.initCurrentUser();
 		AppUser appUser =  appUserRepo.findById(userId).get();
 		if(this.currentUser.getUserId().equals(appUser.getUserId())) {
+			if(!appUser.getOrganizations().isEmpty()) {
+				appUser.getOrganizations().stream().forEach(organization->{
+					organizationService.remove(organization.getOrgaId());
+				});
+			}
 			appUserRepo.deleteById(userId);
 			return "User Delete successfully";
 		}

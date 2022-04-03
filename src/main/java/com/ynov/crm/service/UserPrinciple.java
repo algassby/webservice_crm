@@ -2,8 +2,9 @@ package com.ynov.crm.service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Temporal;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.ynov.crm.enties.AppUser;
+import com.ynov.crm.enties.Organization;
 
 import lombok.Data;
 
@@ -32,6 +34,7 @@ public class UserPrinciple implements UserDetails {
     private String password;
     private String email;
     private String adminId;
+    Set<Organization> organizations = new HashSet<>();
    	@Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdate;
  
@@ -52,7 +55,7 @@ public class UserPrinciple implements UserDetails {
 	 * @param authorities
 	 */
 	public UserPrinciple(String userId, String firstName, String lastName, String username, String email,
-			String password, String adminId , Date lastUpdate,Collection<? extends GrantedAuthority> authorities) {
+			String password, String adminId , Date lastUpdate, Set<Organization> organizations, Collection<? extends GrantedAuthority> authorities) {
 		super();
 		this.userId = userId;
 		this.firstName = firstName;
@@ -60,6 +63,7 @@ public class UserPrinciple implements UserDetails {
 		this.username = username;
 		this.email = email;
 		this.password = password;
+		this.organizations = organizations;
 		this.authorities = authorities;
 	}
 
@@ -69,7 +73,7 @@ public class UserPrinciple implements UserDetails {
         ).collect(Collectors.toList());
 
         return new UserPrinciple( user.getUserId(), user.getFirstName(),user.getLastName(), user.getUsername(), user.getEmail(),
-        		user.getUserKey(),user.getAdminId(), user.getLastUpdate(), authorities
+        		user.getUserKey(),user.getAdminId(), user.getLastUpdate(), user.getOrganizations(), authorities
                
                
         );

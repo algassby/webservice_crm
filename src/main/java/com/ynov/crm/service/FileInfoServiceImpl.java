@@ -245,8 +245,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 				  image.setCustomer(null);
 				  fileInfoRepository.deleteById(image.getFileId());
 			  });
-			  
-				
+			 
 				try {
 					Files.walk(path)
 					  .sorted(Comparator.reverseOrder())

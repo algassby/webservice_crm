@@ -7,16 +7,13 @@ package com.ynov.crm.service;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -182,13 +179,11 @@ public class CustomerServiceImpl implements CustomerService {
 	
 		if(customerRepo.existsById(customerId)) {
 			Customer customer = customerRepo.findById(customerId).get();
+
 			if(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser)) {
 				log.info(customer.toString());
 				log.info(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser).toString());
 				fileService.deleteObjectDirectory(customerId);
-//				customer.getFileInfos().stream().forEach(file->{
-//					
-//				});
 				customerRepo.deleteById(customerId);
 				return new StringBuffer().append("Delete Customer successfully!").toString();
 			}

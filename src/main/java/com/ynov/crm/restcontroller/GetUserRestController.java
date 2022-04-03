@@ -17,6 +17,7 @@ import com.ynov.crm.responsedto.AppUserResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.GetUserService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 @Validated
+@Tag(name = "contact", description = "the Contact API")
 public class GetUserRestController {
 
 	

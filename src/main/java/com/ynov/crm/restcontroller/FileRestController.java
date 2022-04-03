@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.FileInfoService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * @author algas
  *
@@ -31,6 +33,7 @@ import com.ynov.crm.service.FileInfoService;
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 @RequestMapping("/api/files")
+@Tag(name = "contact", description = "the Contact API")
 public class FileRestController {
 
 	

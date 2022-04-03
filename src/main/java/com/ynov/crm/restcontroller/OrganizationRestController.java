@@ -1,9 +1,8 @@
 package com.ynov.crm.restcontroller;
 
-import java.util.List;
+
 
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,25 +12,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ynov.crm.mapper.OrganisationMapper;
 import com.ynov.crm.requestdto.OrganizationRequestDto;
 import com.ynov.crm.responsedto.OrganizationResponsDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.OrganizationService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @CrossOrigin(origins = "*", maxAge = 3600, allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/organizations")
+@Tag(name = "Organization management", description = "Organization management")
 public class OrganizationRestController {
 
 	@Autowired
@@ -45,7 +43,7 @@ public class OrganizationRestController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<?> getAllOrganization(@RequestParam(required = false, defaultValue = "0") Integer pageNo, @RequestParam( defaultValue = "5", required = false) Integer pageSize, @RequestParam(defaultValue = "name", required = false) String sortBy) {
+	public ResponseEntity<?> getAllOrganization(@RequestParam(required = false, defaultValue = "0") Integer pageNo, @RequestParam( defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "name", required = false) String sortBy) {
 		return new ResponseEntity<>(organizationService.findAll(pageNo, pageSize, sortBy), HttpStatus.OK);
 	}
 	@GetMapping("/users/{userId}")
@@ -69,7 +67,6 @@ public class OrganizationRestController {
 		if (organizationService.existsById(orgaId)) {
 			return new ResponseEntity<>(
 					organizationService.getOrganization(orgaId), HttpStatus.OK);
-
 		} 
 
 		return new ResponseEntity<>(new ResponseMessage("This organization is unknow or not Found."),HttpStatus.NOT_FOUND);

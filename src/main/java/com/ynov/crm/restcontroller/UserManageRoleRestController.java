@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.UserService;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-
 /**
  * @author algas
  *
@@ -26,8 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Slf4j
 @Validated
+@Slf4j
+@Tag(name = "User's role management", description = "role management")
 public class UserManageRoleRestController {
 
 	private UserService userService;
@@ -41,9 +41,7 @@ public class UserManageRoleRestController {
 		super();
 		this.userService = userService;
 	}
-	
-	
-	
+
 	@PutMapping("/{username}/update/role/{roleName}")
 	ResponseEntity<?> addRoleToUser(@PathVariable String username, @PathVariable String roleName){
 		if(!userService.existsByUsername(username)){

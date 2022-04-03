@@ -37,7 +37,7 @@ import com.ynov.crm.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 
 /**
@@ -47,7 +47,7 @@ import lombok.Data;
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600, allowedHeaders = "*")
 @RequestMapping("/api/customers")
-
+@Tag(name = "Customer management", description = "Management of the confirmation")
 public class CustomerRestController {
 
 	private CustomerService customerService;
@@ -71,8 +71,8 @@ public class CustomerRestController {
 		return new ResponseEntity<>(customerService.getAllCustomer(pageNo, pageSize, sortBy), HttpStatus.OK);
 		
 	}
-	@GetMapping("/findbyOragnizationId")
-	public ResponseEntity<?> findByOrganization (@RequestParam String orgnizationId){
+	@GetMapping("/orgnization/{orgnizationId}")
+	public ResponseEntity<?> findAllByOrganization (@PathVariable String orgnizationId){
 		return ResponseEntity.ok().body(customerService.findByOrganization(orgnizationId));
 	}
 	@GetMapping("/{customerId}")
@@ -80,15 +80,12 @@ public class CustomerRestController {
 		if(customerId ==null) {
 			return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus. NOT_FOUND); 
 		}
-	
 		if(customerService.existsById(customerId)) {
 			return new ResponseEntity<>(customerService.getCustomer(customerId), HttpStatus.OK); 
 		}
 
 		return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus. NOT_FOUND); 
-		
-		
-		
+
 	}
 	@PostMapping("/save")
 	public ResponseEntity<?> save(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
@@ -140,7 +137,6 @@ public class CustomerRestController {
 		return new ResponseEntity<>(new ResponseMessage(customerService.removeManyImageToCustomer(customerId, jsonRequestDto)), HttpStatus.OK); 
 		
 	}
-	
 	
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

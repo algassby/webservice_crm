@@ -29,9 +29,11 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ynov.crm.service.CustomerServiceImpl;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -53,6 +55,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @ToString
+
 
 public class Customer implements Serializable {
 
@@ -82,6 +85,10 @@ public class Customer implements Serializable {
 	private Organization organization;
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "customer")
 	private Set<FileInfo> fileInfos =  new HashSet<>();
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "customer", orphanRemoval = true)
+	private Set<Appointment> appointments =  new HashSet<>();
+	 
 
 	 public Customer removeImage(FileInfo fileInfo)
      {
@@ -93,6 +100,14 @@ public class Customer implements Serializable {
      {
           fileInfos.removeAll(fileInos);
           fileInos.forEach(image->{
+        	  image.setCustomer(null);
+          });
+          return this;
+     }
+	 public Customer removeAllAppointment(Set<Appointment> appoinments)
+     {
+          this.appointments.removeAll(appoinments);
+          appoinments.forEach(image->{
         	  image.setCustomer(null);
           });
           return this;

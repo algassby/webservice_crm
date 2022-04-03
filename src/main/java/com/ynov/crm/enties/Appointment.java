@@ -6,6 +6,7 @@ package com.ynov.crm.enties;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -16,13 +17,18 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ynov.crm.service.CustomerServiceImpl;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -58,9 +64,11 @@ public class Appointment {
 	@Column(name="place")
 	private String place;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@NotNull(message = "customerId do not null")
-	@JoinColumn(name = "customerId")
+	@JoinColumn(name = "customerId", nullable = false, referencedColumnName ="customerId")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@ToString.Exclude
 	private Customer customer;
 
 

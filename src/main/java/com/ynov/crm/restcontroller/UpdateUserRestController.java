@@ -29,6 +29,7 @@ import com.ynov.crm.responsedto.AppUserResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.UserService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 @Validated
+@Tag(name = "Updated User", description = "Update user information")
 public class UpdateUserRestController {
 	
 	private UserService userService;
