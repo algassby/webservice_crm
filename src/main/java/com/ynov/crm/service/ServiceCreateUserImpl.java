@@ -40,7 +40,6 @@ public class ServiceCreateUserImpl implements ServiceCreateUser {
 	private AppUserRepository appUserRepo;
 	private UserMapper userMapper;
 	private AppRoleRepository  appRoleRepo;
-	private FileInfoService fileService;
 	private UserPrinciple currentUser;
 	private PasswordEncoder encoder;
 	private MailService mailService;
@@ -60,12 +59,11 @@ public class ServiceCreateUserImpl implements ServiceCreateUser {
 	 */
 	@Autowired
 	public ServiceCreateUserImpl(AppUserRepository appUserRepo, UserMapper userMapper, AppRoleRepository appRoleRepo,
-			FileInfoService fileService, PasswordEncoder encoder, MailService mailService) {
+			 PasswordEncoder encoder, MailService mailService) {
 		super();
 		this.appUserRepo = appUserRepo;
 		this.userMapper = userMapper;
 		this.appRoleRepo = appRoleRepo;
-		this.fileService = fileService;
 		this.encoder = encoder;
 		this.mailService = mailService;
 	}

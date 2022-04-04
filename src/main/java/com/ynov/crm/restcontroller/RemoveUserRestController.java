@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -27,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 @Validated
+@Tag(name = "User Controller", description = "Manage the user")
 public class RemoveUserRestController {
 	
 	private UserService userService;
@@ -40,10 +48,19 @@ public class RemoveUserRestController {
 		super();
 		this.userService = userService;
 	}
+	
+	@Operation(summary = "Delete a user by id", description = "remove user if exists", tags = { "User" })
+	@ApiResponses(value = { 
+    @ApiResponse(responseCode = "200", description = "successful operation", 
+					content = @Content(schema = @Schema(implementation = ResponseMessage.class))),
+	@ApiResponse(responseCode = "404", description = "appoitment not found",
+			content = @Content(schema = @Schema(implementation = ResponseMessage.class))) })
 	@DeleteMapping("/{userId}/delete")
-	ResponseEntity<?> removeUser(@PathVariable String userId){
+	ResponseEntity<?> removeUser(
+			@Parameter(description = "userId is required", required = true,
+			content = @Content( schema = @Schema(implementation = String.class)))
+			@PathVariable String userId){
 	log.debug(userId);
-		
 		
 			if(userId!=null) {
 				if(!userService.existsById(userId)){

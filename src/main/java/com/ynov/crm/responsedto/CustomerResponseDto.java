@@ -35,6 +35,7 @@ public class CustomerResponseDto {
 	@Schema(description="Customer firstName", maximum="250")
 	private String  firstName;
 	private String  lastName;
+	private int age;
 	private String  phoneNumer;
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private Organization organization;

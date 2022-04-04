@@ -7,6 +7,7 @@ package com.ynov.crm.requestdto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -36,8 +37,12 @@ public class CustomerRequestDto {
 	@NotBlank(message = "Not valid")
 	@Size(min = 10, max = 10,message =  "phoneNumber is not valid")
 	private String  phoneNumer;
+	
+	@Positive(message = "The age of customer must be")
+	private int age;
 	@NotEmpty(message = "Not be empty")
 	@NotBlank(message = "Not valid")
 	@Size(min = 3, max = 250, message = "OrgaId is too long or too short")
 	private String orgaId;
+	
 }

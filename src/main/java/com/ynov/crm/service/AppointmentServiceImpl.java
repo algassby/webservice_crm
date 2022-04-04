@@ -103,7 +103,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		log.info("appointmentId found : {}", appointmentRepository.existsById(appointmentId));
 
 		if (appointmentRepository.existsById(appointmentId)) {
-
 			appointmentRepository.deleteById(appointmentId);
 			return new ResponseEntity<>(new ResponseMessage("appointment delete."), HttpStatus.OK);
 

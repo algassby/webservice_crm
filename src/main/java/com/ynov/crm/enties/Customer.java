@@ -3,13 +3,9 @@
  */
 package com.ynov.crm.enties;
 
-
-
-import java.io.File;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,21 +13,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -53,6 +39,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @ToString
+
 
 public class Customer implements Serializable {
 
@@ -76,6 +63,8 @@ public class Customer implements Serializable {
 	@Column(name = "phoneNumer",length = 12)
 	private String  phoneNumer;
 	
+	@Column(name = "age")
+	private int age;
 	@ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "orga_id", nullable = true)
@@ -83,7 +72,10 @@ public class Customer implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "customer")
 	private Set<FileInfo> fileInfos =  new HashSet<>();
 	
-	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "customer", orphanRemoval = true)
+	private Set<Appointment> appointments =  new HashSet<>();
+	 
+
 	 public Customer removeImage(FileInfo fileInfo)
      {
           fileInfos.remove(fileInfo);
@@ -94,6 +86,14 @@ public class Customer implements Serializable {
      {
           fileInfos.removeAll(fileInos);
           fileInos.forEach(image->{
+        	  image.setCustomer(null);
+          });
+          return this;
+     }
+	 public Customer removeAllAppointment(Set<Appointment> appoinments)
+     {
+          this.appointments.removeAll(appoinments);
+          appoinments.forEach(image->{
         	  image.setCustomer(null);
           });
           return this;

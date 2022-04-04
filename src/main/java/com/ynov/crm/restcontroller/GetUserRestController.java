@@ -17,7 +17,12 @@ import com.ynov.crm.responsedto.AppUserResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.GetUserService;
 
-import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @author algas
@@ -26,8 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Slf4j
 @Validated
+@Tag(name = "Get a single user", description = "the Contact API")
 public class GetUserRestController {
 
 	
@@ -42,8 +47,13 @@ public class GetUserRestController {
 		this.getUserService = getUserService;
 	}
 
+	@Operation(summary = "get a user")
+    @ApiResponse(responseCode = "200", description = "Get a users  nothing if not exists by message Execption", 
+    content = @Content(schema = @Schema(implementation = AppUserResponseDto.class)))
+	@ApiResponse(responseCode = "404", description = "user not found")
 	@GetMapping("/{userId}")
-	ResponseEntity<?> getUser(@PathVariable  String userId){
+	ResponseEntity<?> getUser(
+			@PathVariable  String userId){
 		if(userId==null || userId.isEmpty()) {
 			return new ResponseEntity<>(new ResponseMessage("Wrong or empty username"), HttpStatus.BAD_REQUEST);
 		}
