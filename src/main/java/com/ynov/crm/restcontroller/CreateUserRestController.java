@@ -25,12 +25,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.requestdto.AppUserRequestDto;
 import com.ynov.crm.requestdto.verifRequestDto.VerifAppointment;
+import com.ynov.crm.responsedto.AppUserResponseDto;
+import com.ynov.crm.responsedto.JwtResponse;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.FindAllUserServiceImpl;
 import com.ynov.crm.service.ServiceCreateUser;
 import com.ynov.crm.service.UserExistByFieldService;
 import com.ynov.crm.utils.DateManagement;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 
@@ -69,8 +77,18 @@ public class CreateUserRestController {
 	/**
 	 * @param serviceUser
 	 */
+	  
+	@Operation(summary = "Create a new user", description = "Create user by AppUserRequestDto", tags = { "User" })
+	  @ApiResponses(value = {
+		        @ApiResponse(responseCode = "200", description = "successful operation, or error",
+		        content = @Content(schema = @Schema(implementation = AppUserResponseDto.class))),
+		        @ApiResponse(responseCode = "405", description = "Validation exception", content = @Content(schema = 
+		        @Schema(implementation = MethodArgumentNotValidException.class)) ) })
 	@PostMapping("/save")
-	ResponseEntity<?> save(@Valid @RequestBody AppUserRequestDto userDto){
+	ResponseEntity<?> save(
+			@Parameter(description = "UserRequestDto cannot be null or empty", required = true,
+			content = @Content(schema = @Schema(implementation = AppUserRequestDto.class)))
+			@Valid @RequestBody AppUserRequestDto userDto){
 
 		Date minDate = findAllUserService.findAllUsers().stream().map(AppUser::getLastUpdate).max(Date::compareTo).get();
 		if(!dateManagement.dateCompare(new Date(),minDate)) {

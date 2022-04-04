@@ -28,13 +28,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ynov.crm.requestdto.AppUserRequestDto;
 import com.ynov.crm.requestdto.CustomerRequestDto;
 import com.ynov.crm.requestdto.JsonObjectDto;
+import com.ynov.crm.responsedto.AppUserResponseDto;
 import com.ynov.crm.responsedto.CustomerResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.CustomerService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,7 +53,7 @@ import lombok.Data;
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600, allowedHeaders = "*")
 @RequestMapping("/api/customers")
-@Tag(name = "Customer management", description = "Management of the confirmation")
+@Tag(name = "Customer management", description = "Management of customer")
 public class CustomerRestController {
 
 	private CustomerService customerService;
@@ -61,22 +67,40 @@ public class CustomerRestController {
 		this.customerService = customerService;
 	}
 	
-	@GetMapping
-	@Operation(summary = "get All Customers")
-    @ApiResponse(responseCode = "400", description = "Invalid Name Supplied")
+	@Operation(summary = "get All Customers and paging")
+    @ApiResponse(responseCode = "200", description = "Get All Customer, if has not contains any customer return empty list", 
+    content = @Content(array = @ArraySchema( schema = @Schema(implementation = CustomerResponseDto.class))))
     @ApiResponse(responseCode = "404", description = "customer not found")
-    
-	public ResponseEntity<?> getAllCustomer(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "10")
-	Integer pageSize, @RequestParam(defaultValue = "lastName")  String sortBy) {
+	@GetMapping
+	public ResponseEntity<?> getAllCustomer(
+			@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "10")Integer pageSize,
+			@RequestParam(defaultValue = "lastName")  String sortBy) {
 		return new ResponseEntity<>(customerService.getAllCustomer(pageNo, pageSize, sortBy), HttpStatus.OK);
 		
 	}
+	
+	@Operation(summary = "get All Customers by organiazation")
+    @ApiResponse(responseCode = "200", description = "Get All Customer inside orgization else nothing", 
+    content = @Content(array = @ArraySchema( schema = @Schema(implementation = CustomerResponseDto.class))))
+    @ApiResponse(responseCode = "404", description = "orgnizationId not found")
+	
 	@GetMapping("/orgnization/{orgnizationId}")
-	public ResponseEntity<?> findAllByOrganization (@PathVariable String orgnizationId){
+	public ResponseEntity<?> findAllByOrganization (
+			@Parameter(description = "orgnizationId cannot be null or empty", required = true)
+			@PathVariable String orgnizationId){
 		return ResponseEntity.ok().body(customerService.findByOrganization(orgnizationId));
 	}
+	
+	@Operation(summary = "get a single Customer")
+    @ApiResponse(responseCode = "200", description = "Get a Customer if exist else message exce", 
+    content = @Content(schema = @Schema(implementation = CustomerResponseDto.class)))
+	@ApiResponse(responseCode = "400", description = "Invalid customerId")
+    @ApiResponse(responseCode = "404", description = "customer not found")
 	@GetMapping("/{customerId}")
-	public ResponseEntity<?> getCustomer(@PathVariable String customerId) {
+	public ResponseEntity<?> getCustomer(
+			@Parameter(description = "customerId can be null or empty", required = false)
+			@PathVariable String customerId) {
 		if(customerId ==null) {
 			return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus. NOT_FOUND); 
 		}
@@ -87,20 +111,40 @@ public class CustomerRestController {
 		return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus. NOT_FOUND); 
 
 	}
+	@Operation(summary = "Create a customer", description = "Create a new customer and add him in a orgnization", tags = { "Customer" })
+	  @ApiResponses(value = {
+		        @ApiResponse(responseCode = "200", description = "successful operation, Json message  or an error",
+		        content = @Content(schema = @Schema(implementation = CustomerResponseDto.class))),
+		        @ApiResponse(responseCode = "405", description = "Validation exception", content = @Content(schema = 
+		        @Schema(implementation = MethodArgumentNotValidException.class)) ) })
 	@PostMapping("/save")
-	public ResponseEntity<?> save(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
+	public ResponseEntity<?> save(
+			@Parameter(description = "customerRequestDto cannot be null or empty", required = true,
+			content = @Content(schema = @Schema(implementation = CustomerRequestDto.class)))
+			@Valid @RequestBody CustomerRequestDto customerRequestDto) {
 		if(customerRequestDto.getOrgaId()==null) {
 			return new ResponseEntity<>(new ResponseMessage("Organization inexistante"), HttpStatus.OK); 
 		}
-	
 		CustomerResponseDto customerResponseDto = customerService.save(customerRequestDto);
 		return customerResponseDto.getCustomerId()!=null ? new ResponseEntity<>(customerResponseDto, HttpStatus.OK)
 				:  new ResponseEntity<>(new ResponseMessage("Cannot save the customer, because the organization is not found"), HttpStatus.OK);  
 		
 	}
 	
+	@Operation(summary = "Update an existing customer", description = "Update a customer if exists else send and message exception", tags = { "Customer" })
+	  @ApiResponses(value = {
+		        @ApiResponse(responseCode = "200", description = "successful operation, Json message  or an error",
+		        content = @Content(schema = @Schema(implementation = CustomerResponseDto.class))),
+		        @ApiResponse(responseCode = "404", description = "customer not found"),
+		        @ApiResponse(responseCode = "405", description = "Validation exception", content = @Content(schema = 
+		        @Schema(implementation = MethodArgumentNotValidException.class)) ) })
 	@PutMapping("/{customerId}/update")
-	public ResponseEntity<?> update(@Valid @RequestBody CustomerRequestDto customerRequestDto, @PathVariable String customerId) {
+	public ResponseEntity<?> update(
+			@Parameter(description = "customerRequestDto cannot be null or empty", required = true,
+			content = @Content(schema = @Schema(implementation = CustomerRequestDto.class)))
+			@Valid @RequestBody CustomerRequestDto customerRequestDto,
+			@Parameter(description = "customerId cannot be null or empty", required = true)
+			@PathVariable String customerId) {
 		if(customerId ==null) {
 			return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus. NOT_FOUND); 
 		}
@@ -112,14 +156,31 @@ public class CustomerRestController {
 		
 	}
 	
+	@Operation(summary = "Delete a customer by id", description = "", tags = { "Customer" })
+	@ApiResponses(value = { 
+	@ApiResponse(responseCode = "200", description = "successful operation",
+			content = @Content(schema = @Schema(implementation = ResponseMessage.class))),
+	@ApiResponse(responseCode = "404", description = "customer not found") })
 	@DeleteMapping("/{customerId}/delete")
-	public ResponseEntity<?> update(@PathVariable String customerId) {
+	public ResponseEntity<?> update(
+			@Parameter(description = "customerId cannot be null or empty", required = true)
+			@PathVariable String customerId) {
 		return new ResponseEntity<>(new ResponseMessage(customerService.delete(customerId)), HttpStatus.OK); 
 		
 	}
 	
+	@Operation(summary = "Add image to customer ", description = "", tags = { "Customer" })
+	@ApiResponses(value = { 
+	@ApiResponse(responseCode = "200", description = "successful operation",
+			content = @Content(schema = @Schema(implementation = ResponseMessage.class))),
+	@ApiResponse(responseCode = "404", description = "customer not found") })
 	@PutMapping("/update/{customerId}/images/save")
-	public ResponseEntity<?> addManyImage(@PathVariable  String customerId, @RequestParam(value = "files") MultipartFile files []) {
+	public ResponseEntity<?> addManyImage(
+			@Parameter(description = "customerId cannot be null or empty", required = true)
+			@PathVariable  String customerId,
+			@Parameter(description = "File is optional", required = false,
+			content = @Content(array= @ArraySchema( schema = @Schema(implementation = MultipartFile.class))))
+			@RequestParam(value = "files") MultipartFile files []) {
 		if(files.length==0) {
 			return new ResponseEntity<>(new ResponseMessage("Cannot  Upload images to customer, cause file is empty!"), HttpStatus.BAD_REQUEST); 
 		}
@@ -127,9 +188,18 @@ public class CustomerRestController {
 		
 	}
 	
-	
+	@Operation(summary = "remove image to customer ", description = "", tags = { "Customer" })
+	@ApiResponses(value = { 
+	@ApiResponse(responseCode = "200", description = "successful operation",
+			content = @Content(schema = @Schema(implementation = ResponseMessage.class))),
+	@ApiResponse(responseCode = "404", description = "customer not found") })
 	@PutMapping("/update/{customerId}/images/delete")
-	public ResponseEntity<?> removeManyImageToCustomer(@PathVariable  String customerId, @RequestBody JsonObjectDto jsonRequestDto) {
+	public ResponseEntity<?> removeManyImageToCustomer(
+			@Parameter(description = "customerId cannot be null or empty", required = true)
+			@PathVariable  String customerId,
+			@Parameter(description = "JsonObjectDto cannot be null or empty", required = true,
+			content = @Content(schema = @Schema(implementation = JsonObjectDto.class)))
+			@RequestBody JsonObjectDto jsonRequestDto) {
 		if(jsonRequestDto.getImages().isEmpty()) {
 			return new ResponseEntity<>(new ResponseMessage("Cannot  delete images from customer, cause files list is empty!"), HttpStatus.BAD_REQUEST);
 		}

@@ -29,8 +29,13 @@ import com.ynov.crm.responsedto.AppUserResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author algas
@@ -39,7 +44,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Slf4j
 @Validated
 @Tag(name = "Updated User", description = "Update user information")
 public class UpdateUserRestController {
@@ -57,9 +61,21 @@ public class UpdateUserRestController {
 
 
 	}
+	  
+	@Operation(summary = "Update an existing user", description = "Update a user by his id", tags = { "User" })
+	@ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "successful operation, or error",
+    content = @Content(schema = @Schema(implementation = AppUserResponseDto.class))),
+    @ApiResponse(responseCode = "405", description = "Validation exception", content = @Content(schema = 
+    @Schema(implementation = MethodArgumentNotValidException.class)) ) })
 	@PutMapping("/{userId}/update")
 	@ExceptionHandler(ConstraintViolationException.class)
-	ResponseEntity<?> update(@Valid @RequestBody AppUserRequestDto userDto, @PathVariable String userId){
+	ResponseEntity<?> update(
+			@Parameter(description = "UserRequestDto cannot be null or empty", required = true,
+			content = @Content(schema = @Schema(implementation = AppUserRequestDto.class)))
+			@Valid @RequestBody AppUserRequestDto userDto,
+			@Parameter(description="user id Cannot be empty or null.", required = true)
+			@PathVariable String userId){
 		if(!userService.existsById(userId)){
 			return new ResponseEntity<>(new ResponseMessage("User not found"),HttpStatus.NOT_FOUND);
 		}

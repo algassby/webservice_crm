@@ -27,24 +27,42 @@ import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
 import com.ynov.crm.requestdto.AppUserRequestDto;
 import com.ynov.crm.requestdto.LoginForm;
+import com.ynov.crm.responsedto.AppointmentResponseDto;
 import com.ynov.crm.responsedto.JwtResponse;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.AuthServiceImpl;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @CrossOrigin(origins = "*", maxAge = 3600,allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/auth")
-@Tag(name = "contact", description = "the Contact API")
+@Tag(name = "User Authentification", description = "API Authentification allowed to access customer and organization management")
 public class AuthRestController {
 
 	@Autowired
 	private AuthServiceImpl authServiceImpl;
 	
+	  
+	@Operation(summary = "User Authentification", description = "Auth by username and userKey", tags = { "Appoitement" })
+	  @ApiResponses(value = {
+		        @ApiResponse(responseCode = "200", description = "successful operation, return Jwt and user inforation or unhautorized 401",
+		        content = @Content(schema = @Schema(implementation = JwtResponse.class))),
+		        @ApiResponse(responseCode = "401", description = "Invalid username or useKey, unhautorized "),
+		        @ApiResponse(responseCode = "405", description = "Validation exception") })
 
 	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginRequest) {
+	public ResponseEntity<?> authenticateUser(
+			@Parameter(description="loginRequest cannot be empty or null", required = true,
+					schema=@Schema(implementation = LoginForm.class))
+			@Valid @RequestBody LoginForm loginRequest) {
 		return ResponseEntity.ok(authServiceImpl.signin(loginRequest));
 	}
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
