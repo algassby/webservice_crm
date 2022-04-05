@@ -5,7 +5,7 @@ Ynov projet master webservice
 * Insallation de maven: https://maven.apache.org/install.html et https://mkyong.com/maven/how-to-install-maven-in-windows/
 * Installer xampp ou wamp pour utiliser Mysql
 * Demarrer apacher et mysql
-* Tapez la commande suivante: git clone origin master git@github.com:algassby/webservice_crm.git
+* Tapez la commande suivante: git clone origin main git@github.com:algassby/webservice_crm.git: recuperer la branch main pour tester le projet.
 * Aller dans la racine du projet, ensuite saisir les commandes maven suivantes:
   + mvn clean install, installation des dependances et build du projet
   + mvn spring-boot:run, lancement du projet
