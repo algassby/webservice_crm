@@ -28,6 +28,7 @@ import com.ynov.crm.requestdto.verifRequestDto.VerifAppointment;
 import com.ynov.crm.responsedto.AppUserResponseDto;
 import com.ynov.crm.responsedto.JwtResponse;
 import com.ynov.crm.responsedto.ResponseMessage;
+import com.ynov.crm.responsedto.ResponseMessageUser;
 import com.ynov.crm.service.FindAllUserServiceImpl;
 import com.ynov.crm.service.ServiceCreateUser;
 import com.ynov.crm.service.UserExistByFieldService;
@@ -97,8 +98,9 @@ public class CreateUserRestController {
 		if(userExistByFieldService.existsByEmail(userDto.getEmail()) || userExistByFieldService.existsByUsername(userDto.getUsername())) {
 			return new ResponseEntity<>(new ResponseMessage("User already taken"),HttpStatus.BAD_REQUEST);
 		}
-		if (userService.save(userDto) != null){
-			return new ResponseEntity<>(new ResponseMessage("L'administrateur a été ajouté avec succès!"), HttpStatus.OK);
+		AppUserResponseDto userResponseDto = userService.save(userDto);
+		if (userResponseDto != null){
+			return new ResponseEntity<>(new ResponseMessageUser("L'administrateur a été ajouté avec succès!", userResponseDto), HttpStatus.OK);
 		}
 		return  new ResponseEntity<>(new ResponseMessage("Erreur lors de l'ajout de l'administrateur."), HttpStatus.EXPECTATION_FAILED);
 	}

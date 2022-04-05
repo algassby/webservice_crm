@@ -4,6 +4,7 @@
 package com.ynov.crm.enties;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -16,6 +17,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.GenericGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -74,7 +78,10 @@ public class Customer implements Serializable {
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "customer", orphanRemoval = true)
 	private Set<Appointment> appointments =  new HashSet<>();
-	 
+	
+	@Column(name = "lastUpdate")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lastUpdate;
 
 	 public Customer removeImage(FileInfo fileInfo)
      {

@@ -13,19 +13,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.ynov.crm.enties.AppRole;
 import com.ynov.crm.enties.AppUser;
+import com.ynov.crm.enties.Log;
 import com.ynov.crm.mapper.UserMapper;
 import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
+import com.ynov.crm.repository.LogRepository;
 import com.ynov.crm.requestdto.AppUserRequestDto;
 import com.ynov.crm.responsedto.AppUserResponseDto;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author algas
@@ -34,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @Data
-@Slf4j
+
 public class ServiceCreateUserImpl implements ServiceCreateUser {
 
 	private AppUserRepository appUserRepo;
@@ -42,6 +41,7 @@ public class ServiceCreateUserImpl implements ServiceCreateUser {
 	private AppRoleRepository  appRoleRepo;
 	private UserPrinciple currentUser;
 	private PasswordEncoder encoder;
+	private LogRepository logRepository;
 	private MailService mailService;
 	@Value("${crm.superAdmin}")
 	private String superAdmin;
@@ -58,12 +58,14 @@ public class ServiceCreateUserImpl implements ServiceCreateUser {
 	 * @param superAdmin
 	 */
 	@Autowired
-	public ServiceCreateUserImpl(AppUserRepository appUserRepo, UserMapper userMapper, AppRoleRepository appRoleRepo,
+	public ServiceCreateUserImpl(AppUserRepository appUserRepo, UserMapper userMapper,
+			 AppRoleRepository appRoleRepo, LogRepository logRepository,
 			 PasswordEncoder encoder, MailService mailService) {
 		super();
 		this.appUserRepo = appUserRepo;
 		this.userMapper = userMapper;
 		this.appRoleRepo = appRoleRepo;
+		this.logRepository = logRepository;
 		this.encoder = encoder;
 		this.mailService = mailService;
 	}
@@ -133,6 +135,13 @@ public class ServiceCreateUserImpl implements ServiceCreateUser {
 				);
 		
 		this.mailService.sendEmail("Create administrator account", text, userDto.getEmail());
+		
+		if(appUserSaved!=null) {
+			logRepository.save(new Log().setUsername(currentUser.getUsername())
+					.setDescription(new StringBuffer().append("L'admin").append(currentUser.getUsername()).append(" a ajouter  l'admin ")
+							.append(appUserSaved.getUsername())
+							.append(" à ").append(new Date()).append(".").toString()).setLastUpdate(new Date()));
+		}
 		return userMapper.appUserToAppUserResponseDto(appUserSaved);
 	}
 

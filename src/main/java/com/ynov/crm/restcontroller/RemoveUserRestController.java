@@ -73,7 +73,5 @@ public class RemoveUserRestController {
 			else {
 				return new ResponseEntity<>(new ResponseMessage("Wrong userId"),HttpStatus.BAD_REQUEST);
 			}
-		
-		
 	}
 }

@@ -5,11 +5,6 @@ package com.ynov.crm.service;
 
 
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.enties.Customer;
 import com.ynov.crm.enties.FileInfo;
+import com.ynov.crm.enties.Log;
 import com.ynov.crm.enties.Organization;
 import com.ynov.crm.mapper.CustomerMapper;
 import com.ynov.crm.repository.CustomerRepository;
+import com.ynov.crm.repository.LogRepository;
 import com.ynov.crm.repository.OrganizationRepository;
 import com.ynov.crm.requestdto.CustomerRequestDto;
 import com.ynov.crm.requestdto.JsonObjectDto;
@@ -54,6 +51,7 @@ public class CustomerServiceImpl implements CustomerService {
 	private CustomerMapper customerMapper;
 	private OrganizationRepository organizationRepo;
 	private FileInfoService fileService;
+	private LogRepository logRepository;
 	private UserPrinciple currentUser;
 	private CheckAccessAdmin checkAccessAdmin;
 	
@@ -65,6 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public CustomerServiceImpl(CustomerRepository customerRepo,
 							   CustomerMapper customerMapper,
 							   OrganizationRepository organizationRepo,
+							   LogRepository logRepository,
 							   @Qualifier("FileInfoServiceImpl")  FileInfoService fileService,
 							   CheckAccessAdmin checkAccessAdmin
 							   )
@@ -74,6 +73,7 @@ public class CustomerServiceImpl implements CustomerService {
 		this.customerMapper = customerMapper;
 		this.organizationRepo = organizationRepo;
 		this.fileService = fileService;
+		this.logRepository = logRepository;
 		this.checkAccessAdmin = checkAccessAdmin;
 		this.fileService.init();
 	}
@@ -136,12 +136,19 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public CustomerResponseDto save(CustomerRequestDto customerRequestDto) {
-		
-		Customer customer = customerMapper.customerRequestDtoToCustomer(customerRequestDto);
+		this.initCurrentUser();
+		Customer customer = customerMapper.customerRequestDtoToCustomer(customerRequestDto).setLastUpdate(new Date());
 		
 		if(organizationRepo.existsById(customerRequestDto.getOrgaId())) {
 			customer.setOrganization(organizationRepo.findById(customerRequestDto.getOrgaId()).get());
-			return customerMapper.customerToCustomerResponseDto(customerRepo.save(customer));
+			Customer customerSaved = customerRepo.save(customer);
+			if(customerSaved!=null) {
+				
+				logRepository.save(new Log().setUsername(currentUser.getUsername())
+						.setDescription(new StringBuffer().append("L'admin").append(currentUser.getUsername()).append(" a ajouter ").append(" un customer ")
+								.append(" à ").append(new Date()).append(".").toString()).setLastUpdate(new Date()));
+			}
+			return customerMapper.customerToCustomerResponseDto(customerSaved);
 		}
 		return new CustomerResponseDto();
 		
@@ -156,13 +163,17 @@ public class CustomerServiceImpl implements CustomerService {
 		Customer customer = customerRepo.findById(customerId).get();
 		
 		if(customerRequestDto.getOrgaId()!=null) {
-			customer.setOrganization(organizationRepo.findById(customerRequestDto.getOrgaId()).get());
+			if(organizationRepo.existsById(customerRequestDto.getOrgaId())) {
+				Organization organization = organizationRepo.findById(customerRequestDto.getOrgaId()).get();
+				customer.setOrganization(organization);
+			}
+			
 		}
 	
 		if(checkAccessAdmin.checkAccess(customer.getOrganization().getAppUser().getUserId(), currentUser)) {
 			
 			customer.setFirstName(customerRequestDto.getFirstName()).setLastName(customerRequestDto.getLastName())
-			.setPhoneNumer(customerRequestDto.getPhoneNumer());
+			.setPhoneNumer(customerRequestDto.getPhoneNumer()).setLastUpdate(new Date());
 			
 			return customerMapper.customerToCustomerResponseDto(customerRepo.save(customer));
 		}
@@ -185,12 +196,16 @@ public class CustomerServiceImpl implements CustomerService {
 				log.info(checkAccessAdmin.checkAccess(customer.getOrganization().getAdminId(), currentUser).toString());
 				fileService.deleteObjectDirectory(customerId);
 				customerRepo.deleteById(customerId);
+				if(!customerRepo.existsById(customerId)) {
+					logRepository.save(new Log().setUsername(currentUser.getUsername())
+							.setDescription(new StringBuffer().append("L'admin").append(currentUser.getUsername()).append(" a supprimer ").append(" un customer ")
+									.append(" à ").append(new Date()).append(".").toString()).setLastUpdate(new Date()));
+				}
 				return new StringBuffer().append("Delete Customer successfully!").toString();
 			}
 			
 		}
 		return new StringBuffer().append("Failed deleted, cause Customer doest not exists!").toString(); 
-		
 		
 	}
 	@Override
@@ -286,12 +301,7 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 		
 		Set<String> imagesStr = jsonObjectDto.getImages();
-//		jsonObjectDto.getImages().stream().forEach(image->{
-//			if(fileService.existsByFileName(image)) {
-//				imagesStr.add(image);
-//			}
-//			
-//		});
+
 		Customer customer = customerRepo.findById(customerId).get();
 		
 		
