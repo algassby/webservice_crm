@@ -20,9 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ynov.crm.enties.AppRole;
 import com.ynov.crm.enties.AppUser;
+import com.ynov.crm.enties.Log;
 import com.ynov.crm.mapper.UserMapper;
 import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
+import com.ynov.crm.repository.LogRepository;
 import com.ynov.crm.requestdto.AppUserRequestDto;
 import com.ynov.crm.responsedto.AppUserResponseDto;
 import lombok.Data;
@@ -46,6 +48,7 @@ public class UserServiceImpl implements UserService {
 	private UserMapper userMapper;
 	private AppRoleRepository  appRoleRepo;
 	OrganizationService organizationService;
+	private LogRepository logRepository;
 	private String subject;
 	private MailService mailService;
 	private UserPrinciple currentUser;
@@ -67,6 +70,7 @@ public class UserServiceImpl implements UserService {
 						   UserMapper userMapper,
 						   AppRoleRepository appRoleRepo,
 						   OrganizationService organizationService,
+						   LogRepository logRepository,
 						   MailService mailService
 						   ) {
 		super();
@@ -74,6 +78,7 @@ public class UserServiceImpl implements UserService {
 		this.userMapper = userMapper;
 		this.appRoleRepo = appRoleRepo;
 		this.organizationService =  organizationService;
+		this.logRepository = logRepository;
 		this.mailService = mailService;
 	
 	}
@@ -199,13 +204,19 @@ public class UserServiceImpl implements UserService {
 	public String removeUser(String userId) {
 		this.initCurrentUser();
 		AppUser appUser =  appUserRepo.findById(userId).get();
-		if(this.currentUser.getUserId().equals(appUser.getUserId())) {
+		if(this.currentUser.getUserId().equals(appUser.getAdminId())) {
 			if(!appUser.getOrganizations().isEmpty()) {
 				appUser.getOrganizations().stream().forEach(organization->{
 					organizationService.remove(organization.getOrgaId());
 				});
 			}
 			appUserRepo.deleteById(userId);
+			if(!appUserRepo.existsById(userId)) {
+				logRepository.save(new Log().setUsername(currentUser.getUsername())
+						.setDescription(new StringBuffer().append("L'admin").append(currentUser.getUsername()).append(" a supprimer l'admin ")
+								.append(appUser.getUsername())
+								.append(" à ").append(new Date()).append(".").toString()).setLastUpdate(new Date()));
+			}
 			return "User Delete successfully";
 		}
 		return new StringBuilder("The current admin ").append(appUser.getFirstName()).append("cannot remove the target admin").toString();

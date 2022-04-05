@@ -1,5 +1,6 @@
 package com.ynov.crm.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
@@ -13,14 +14,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ynov.crm.enties.AppUser;
+import com.ynov.crm.enties.Log;
 import com.ynov.crm.enties.Organization;
 import com.ynov.crm.mapper.OrganisationMapper;
 import com.ynov.crm.repository.AppUserRepository;
+import com.ynov.crm.repository.LogRepository;
 import com.ynov.crm.repository.OrganizationRepository;
 import com.ynov.crm.requestdto.OrganizationRequestDto;
 import com.ynov.crm.responsedto.OrganizationResponsDto;
@@ -39,19 +41,21 @@ public class OrganizationServiceImpl implements OrganizationService{
 	private OrganisationMapper organisationMapper;
 	private FileInfoService fileInfoService;
 	private FileInfoService fileInfoCustomerService;
+	private LogRepository logRepository;
     private CheckAccessAdmin checkAccessAdmin;
     private UserPrinciple currentUser;
 	
 	
     @Autowired
 	public OrganizationServiceImpl(OrganizationRepository organizationRepository, AppUserRepository userRepository,
-			OrganisationMapper organisationMapper, CheckAccessAdmin checkAccessAdmin, 
+			OrganisationMapper organisationMapper, CheckAccessAdmin checkAccessAdmin, LogRepository logRepository,
 			@Qualifier(value = "FileInforServiceOrganization") FileInfoService fileInfoService,
 			@Qualifier(value = "FileInfoServiceImpl")FileInfoService fileInfoCustomerService) {
 		super();
 		this.organizationRepository = organizationRepository;
 		this.userRepository = userRepository;
 		this.organisationMapper = organisationMapper;
+		this.logRepository = logRepository;
 		this.fileInfoService = fileInfoService;
 		this.fileInfoCustomerService = fileInfoCustomerService;
 		this.checkAccessAdmin = checkAccessAdmin;
@@ -138,6 +142,8 @@ public class OrganizationServiceImpl implements OrganizationService{
 	public OrganizationResponsDto save(OrganizationRequestDto organizationRequestDto, MultipartFile file) {
 		this.initCurrentUser();
 		AppUser user = userRepository.findByUsername(getCurrentUser().getUsername()).get();
+		List<Log> logs = logRepository.findAll();
+		
 		Organization organizationSaved = organizationRepository.save(
 				organisationMapper
 				.OrganisationRequestDtoToOrganization(organizationRequestDto).setAdminId(user.getUserId()).setAppUser(user));
@@ -145,9 +151,17 @@ public class OrganizationServiceImpl implements OrganizationService{
 			this.getFileInfoService().uploadToLocalFileSystem(organizationSaved.getOrgaId(), file);
 		}
 		
+		Organization organizationCurrentSaved = organizationRepository.save(organizationSaved);
+		if(organizationCurrentSaved!=null) {
+			logRepository.save(new Log().setUsername(user.getUsername())
+					.setDescription(new StringBuffer().append("L'admin").append(user.getUsername()).append(" a creer ").append(" l' organization ")
+							.append(organizationCurrentSaved.getName())
+							.append(" à ").append(new Date()).append(".").toString()).setLastUpdate(new Date()));
+		}
+		
 		return organisationMapper
 				.OrganisationToOrganizationResponseDto
-				(organizationRepository.save(organizationSaved));
+				(organizationCurrentSaved);
 	}
 
 	@Override
@@ -155,7 +169,6 @@ public class OrganizationServiceImpl implements OrganizationService{
 		this.initCurrentUser();
 		Organization organization = organizationRepository.findById(orgaId).get();
 		if(this.getCheckAccessAdmin().checkAccess(organization.getAdminId(), getCurrentUser())) {
-			
 			Organization organizationUpdated = organizationRepository.findById(orgaId).get();
 			organizationUpdated.setName(organizationRequestDto.getName())
 			.setAddress(organizationRequestDto.getAddress())
@@ -188,8 +201,15 @@ public class OrganizationServiceImpl implements OrganizationService{
 						fileInfoCustomerService.deleteObjectDirectory(customer.getCustomerId());
 					});
 				}
+				
 				this.fileInfoService.deleteObjectDirectory(orgaId);
 				organizationRepository.deleteById(orgaId);
+				if(!organizationRepository.existsById(orgaId)) {
+					logRepository.save(new Log().setUsername(currentUser.getUsername())
+							.setDescription(new StringBuffer().append("L'admin").append(currentUser.getUsername()).append(" a supprimer ").append(" l' organization ")
+									.append(organization.getName())
+									.append(" à ").append(new Date()).append(".").toString()).setLastUpdate(new Date()));
+				}
 				return "remove organization successfully";
 			}
 			else {

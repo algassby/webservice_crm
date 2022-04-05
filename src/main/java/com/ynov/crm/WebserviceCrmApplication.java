@@ -11,6 +11,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -26,13 +29,14 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
 
 @SpringBootApplication
+@EnableAsync
 @OpenAPIDefinition(
         info = @Info(
                 title = "CRM API",
                 version = "1.0",
                 description = "CRM API",
                 license = @License(name = "Apache 2.0", url = "http://localhost:8084"),
-                contact = @Contact(url = "http://localhost:8084", name = "MAS", email = "mas@gmail.com")
+                contact = @Contact(url = "http://localhost:8084", name = "MAS", email = "graphaltere@gmail.com")
         )
 )
 public class WebserviceCrmApplication {
@@ -54,7 +58,6 @@ public class WebserviceCrmApplication {
 					roleDao.save(roleUser);
 			}
 			
-			
 			AppRole roleAdmin = new AppRole();
 			roleAdmin.setRoleName("ROLE_ADMIN");
 			if(!roleDao.existsByRoleName("ROLE_ADMIN")) {
@@ -74,6 +77,16 @@ public class WebserviceCrmApplication {
 			
 		};
 	}
+	
+	  @Bean("threadPoolTaskExecutor")
+	    public TaskExecutor getAsyncExecutor() {
+	        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+	        executor.setCorePoolSize(20);
+	        executor.setMaxPoolSize(1000);
+	        executor.setWaitForTasksToCompleteOnShutdown(true);
+	        executor.setThreadNamePrefix("Async-");
+	        return executor;
+	    }
 	
 	
 	
