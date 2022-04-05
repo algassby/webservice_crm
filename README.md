@@ -24,6 +24,8 @@ La même logique s'applique aux oranisation (uploads/organization/customerId).</
   
  # NB:
  Attention il faut avoir un compte gmail valid pour recevoir le mail contenant la clé de l'api pour la connexion et le lien de la documentation.<br/>
- Nous restons à votre dispostion pour toutes demandes concernant le fonctionnement de l'api.
+ Nous restons à votre dispostion pour toutes demandes concernant le fonctionnement de l'api. <br/>
+ L'envoie du mail se fait de manière asynchrone, ce qui fait qu'on redonne la main rapidement à l'utilisateur.<br/>
+ C'est à dire on ajoute l'utilisateur ensuite envoie le mail independant de l'ajout.
 
 
