@@ -20,7 +20,7 @@ Chaque customers aura son propre repertoire (identificant) pour stocker ses phot
 La même logique s'applique aux oranisation</p><br/>
 <p>Quand un admin ajoute ou supprime un autre admin, une organisation ou un customer, l'action est sauvegarder dans la table Logs.</p>
 <p>Ensuite on peut voir les logs, les filtrer aussi par le username d'un admin.</p><br/>
-<p>Une nouvelle fonctionnalité d'alerte est prevu pour sauvergarder des alertes quand un admin ajoute plusieurs organisations ou clients<p> 
+<p>Une nouvelle fonctionnalité d'alerte est prevu pour sauvergarder des alertes quand un admin ajoute plusieurs organisations ou clients ou les supprime.<p> 
   
  # NB:
  Attention il faut avoir un compte gmail valid pour recevoir le mail contenant la clé de l'api pour la connexion et le lien de la documentation.<br/>
