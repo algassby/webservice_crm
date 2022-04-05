@@ -15,9 +15,9 @@ Ynov projet master webservice
 * username:admin
 * userKey:123456789
 <p>Il va vous permettre de creer les autres admin, des organisations, des clients, des customers et rajouter des photos pour le customers.
-les images des customers crées sont enregistrées dans dans dossier uploads/customerId.
+les images des customers crées sont enregistrées dans dans dossier uploads/customer/customerId.
 Chaque customers aura son propre repertoire (identificant) pour stocker ses photos.
-La même logique s'applique aux oranisation</p><br/>
+La même logique s'applique aux oranisation (uploads/organization/customerId).</p><br/>
 <p>Quand un admin ajoute ou supprime un autre admin, une organisation ou un customer, l'action est sauvegarder dans la table Logs.</p>
 <p>Ensuite on peut voir les logs, les filtrer aussi par le username d'un admin.</p><br/>
 <p>Une nouvelle fonctionnalité d'alerte est prevu pour sauvergarder des alertes quand un admin ajoute plusieurs organisations ou clients ou les supprime.<p> 
