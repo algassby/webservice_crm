@@ -5,12 +5,12 @@ Ynov projet master webservice
 * Insallation de maven: https://maven.apache.org/install.html et https://mkyong.com/maven/how-to-install-maven-in-windows/
 * Installer xampp ou wamp pour utiliser Mysql
 * Demarrer apacher et mysql
-* Tapez la commande suivante: git clone origin main git@github.com:algassby/webservice_crm.git: recuperer la branch main pour tester le projet.
+* Tapez la commande suivante: git clone origin main git@github.com:algassby/webservice_crm.git: recuperer la branche main pour tester le projet.
 * Aller dans la racine du projet, ensuite saisir les commandes maven suivantes:
   + mvn clean install, installation des dependances et build du projet
   + mvn spring-boot:run, lancement du projet
 
-# Après ces deux commandes, l'api vas demarrer en creant votre base de données s'il elle n'existe et les tables en remplissant la table Role et utilisateurs.
+# Après ces deux commandes, l'api vas demarrer en creant votre base de données s'il elle n'existe pas, ensuite elle va créer les tables en remplissant les tables roles et utilisateurs.
 # Un utilisation ayant les informations:
 * username:admin
 * userKey:123456789
@@ -20,7 +20,7 @@ Chaque customers aura son propre repertoire (identificant) pour stocker ses phot
 La même logique s'applique aux oranisation (uploads/organization/customerId).</p><br/>
 <p>Quand un admin ajoute ou supprime un autre admin, une organisation ou un customer, l'action est sauvegarder dans la table Logs.</p>
 <p>Ensuite on peut voir les logs, les filtrer aussi par le username d'un admin.</p><br/>
-<p>Une nouvelle fonctionnalité d'alerte est prevu pour sauvergarder des alertes quand un admin ajoute plusieurs organisations ou clients ou les supprime.<p> 
+<p>Une nouvelle fonctionnalité d'alerte est prevue pour sauvergarder des alertes quand un admin ajoute plusieurs organisations ou clients ou les supprime.<p> 
   
  # NB:
  Attention il faut avoir un compte gmail valid pour recevoir le mail contenant la clé de l'api pour la connexion et le lien de la documentation.<br/>
