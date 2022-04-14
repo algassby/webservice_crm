@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.enties.Customer;
 import com.ynov.crm.enties.FileInfo;
 import com.ynov.crm.enties.Log;
@@ -29,7 +28,6 @@ import com.ynov.crm.repository.LogRepository;
 import com.ynov.crm.repository.OrganizationRepository;
 import com.ynov.crm.requestdto.CustomerRequestDto;
 import com.ynov.crm.requestdto.JsonObjectDto;
-import com.ynov.crm.responsedto.AppUserResponseDto;
 import com.ynov.crm.responsedto.CustomerResponseDto;
 import com.ynov.crm.utils.CheckAccessAdmin;
 

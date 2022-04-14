@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ynov.crm.enties.AppUser;
-import com.ynov.crm.mapper.UserMapper;
 import com.ynov.crm.repository.AppUserRepository;
-import com.ynov.crm.responsedto.AppUserResponseDto;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

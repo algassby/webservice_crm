@@ -24,9 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.requestdto.AppUserRequestDto;
-import com.ynov.crm.requestdto.verifRequestDto.VerifAppointment;
 import com.ynov.crm.responsedto.AppUserResponseDto;
-import com.ynov.crm.responsedto.JwtResponse;
 import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.responsedto.ResponseMessageUser;
 import com.ynov.crm.service.FindAllUserServiceImpl;

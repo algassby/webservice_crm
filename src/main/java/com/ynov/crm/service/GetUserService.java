@@ -6,19 +6,16 @@ package com.ynov.crm.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.mapper.UserMapper;
-import com.ynov.crm.repository.AppRoleRepository;
 import com.ynov.crm.repository.AppUserRepository;
 import com.ynov.crm.responsedto.AppUserResponseDto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author algas
@@ -28,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @NoArgsConstructor
 @Transactional
-@Slf4j
+
 public class GetUserService {
 
 	private AppUserRepository appUserRepo;

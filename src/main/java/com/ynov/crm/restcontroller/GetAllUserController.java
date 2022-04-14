@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ynov.crm.responsedto.AppUserResponseDto;
-import com.ynov.crm.responsedto.FileInfoResponseDto;
 import com.ynov.crm.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;

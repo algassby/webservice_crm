@@ -10,7 +10,6 @@ import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import com.ynov.crm.enties.Customer;
 import com.ynov.crm.enties.Organization;
 
 import lombok.AllArgsConstructor;

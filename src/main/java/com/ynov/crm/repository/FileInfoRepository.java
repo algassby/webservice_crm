@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.ynov.crm.enties.FileInfo;
-import com.ynov.crm.responsedto.FileInfoResponseDto;
+
 
 /**
  * @author algas
@@ -17,11 +17,9 @@ import com.ynov.crm.responsedto.FileInfoResponseDto;
 @Repository
 public interface FileInfoRepository extends JpaRepository<FileInfo, String>{
 
-	//public List<FileInfoResponseDto> findAllFile();
+
 	@Query("select f from FileInfo f join fetch f.customer c where c.customerId =:customerId")
 	public List<FileInfo> findAllFileByCustomer(String customerId);
-//	@Query("delete  from FileInfo f join fetch f.customer c where c.customerId =:customerId")
-//	public void removeAllFileByCustomer(String customerId);
 	public FileInfo findByFileName(String fileName);
 	public Boolean existsByFileName(String fileName);
 	 @Modifying(clearAutomatically = true, flushAutomatically = true)

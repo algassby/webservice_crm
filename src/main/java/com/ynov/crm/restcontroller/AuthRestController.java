@@ -1,9 +1,7 @@
 package com.ynov.crm.restcontroller;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -20,21 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ynov.crm.config.JwtProvider;
-import com.ynov.crm.enties.AppRole;
-import com.ynov.crm.enties.AppUser;
-import com.ynov.crm.repository.AppRoleRepository;
-import com.ynov.crm.repository.AppUserRepository;
-import com.ynov.crm.requestdto.AppUserRequestDto;
+
 import com.ynov.crm.requestdto.LoginForm;
-import com.ynov.crm.responsedto.AppointmentResponseDto;
 import com.ynov.crm.responsedto.JwtResponse;
-import com.ynov.crm.responsedto.ResponseMessage;
 import com.ynov.crm.service.AuthServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

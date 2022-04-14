@@ -1,13 +1,8 @@
 package com.ynov.crm.service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -51,7 +46,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public ResponseEntity<Object> save(AppointmentRequestDto appointmentRequestDto) {
-		// TODO tester champ date
+
 		String resultVerif = VerifAppointment.verifChampAppointment(appointmentRequestDto);
 		if (resultVerif != null) {
 			return new ResponseEntity<>(resultVerif, HttpStatus.NOT_ACCEPTABLE);

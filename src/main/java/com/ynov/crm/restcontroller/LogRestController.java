@@ -5,7 +5,6 @@ package com.ynov.crm.restcontroller;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ynov.crm.enties.Log;
 import com.ynov.crm.repository.LogRepository;
-import com.ynov.crm.responsedto.AppointmentResponseDto;
 import com.ynov.crm.responsedto.ResponseMessage;
 
 import io.swagger.v3.oas.annotations.Operation;

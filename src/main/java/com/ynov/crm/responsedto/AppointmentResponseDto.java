@@ -2,7 +2,6 @@ package com.ynov.crm.responsedto;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ynov.crm.enties.Customer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

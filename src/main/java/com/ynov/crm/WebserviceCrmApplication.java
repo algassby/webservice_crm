@@ -16,8 +16,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
 import com.ynov.crm.enties.AppRole;
 import com.ynov.crm.enties.AppUser;
 import com.ynov.crm.repository.AppRoleRepository;

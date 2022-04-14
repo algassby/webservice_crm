@@ -10,7 +10,6 @@ import com.ynov.crm.repository.AppUserRepository;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author algas
@@ -20,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @NoArgsConstructor
 @Transactional
-@Slf4j
+
 public class UserExistByFieldService {
 
 	private AppUserRepository appUserRepo;

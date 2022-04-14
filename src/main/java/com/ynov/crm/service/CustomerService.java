@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ynov.crm.enties.Customer;
 import com.ynov.crm.requestdto.CustomerRequestDto;
 import com.ynov.crm.requestdto.JsonObjectDto;
 import com.ynov.crm.responsedto.CustomerResponseDto;
