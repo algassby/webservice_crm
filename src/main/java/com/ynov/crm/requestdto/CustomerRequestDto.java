@@ -38,7 +38,7 @@ public class CustomerRequestDto {
 	@Size(min = 10, max = 10,message =  "phoneNumber is not valid")
 	private String  phoneNumer;
 	
-	@Positive(message = "The age of customer must be")
+	@Positive(message = "The age of customer must be positve")
 	private int age;
 	@NotEmpty(message = "Not be empty")
 	@NotBlank(message = "Not valid")

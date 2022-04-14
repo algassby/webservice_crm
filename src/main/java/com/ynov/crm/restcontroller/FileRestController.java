@@ -126,7 +126,7 @@ public class FileRestController {
 			return ResponseEntity.ok().body(new ResponseMessage("Invalid FileName"));
 		}
 		if(!fileInfoServiceOrga.existsByFileName(fileName)) {
-			return ResponseEntity.ok().body(new ResponseMessage("The file doest not exits!"));
+			return new ResponseEntity<>(new ResponseMessage("The file doest not exits!"), HttpStatus.NOT_FOUND );
 		}
 		Resource  resource =  fileInfoServiceOrga.load(fileName);
 		String contentType = null;

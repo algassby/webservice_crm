@@ -4,6 +4,7 @@
 package com.ynov.crm.service;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
 	 * @param encoder
 	 * @param jwtProvider
 	 */
+	@Autowired
 	public AuthServiceImpl(AuthenticationManager authenticationManager,
 			AppRoleRepository roleRepository, PasswordEncoder encoder, JwtProvider jwtProvider) {
 		super();

@@ -13,6 +13,7 @@ public class MailService {
     private JavaMailSender javaMailSender;
     
     @Async("threadPoolTaskExecutor")
+    
     public void sendEmail(String subject,String text, String mail) {
     	try {
     		 Thread.sleep(2000);
