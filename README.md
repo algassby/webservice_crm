@@ -1,5 +1,6 @@
 # webservice_crm
 Ynov projet master webservice
+## INSTALLATION DU PROJET
 * Pour utiliser cette api, il faudra suivre ces étapes à la lettre.
 * Installation de java 11: https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html
 * Insallation de maven: https://maven.apache.org/install.html et https://mkyong.com/maven/how-to-install-maven-in-windows/
@@ -9,7 +10,10 @@ Ynov projet master webservice
 * Aller dans la racine du projet, ensuite saisir les commandes maven suivantes:
   + mvn clean install, installation des dependances et build du projet
   + mvn spring-boot:run, lancement du projet
-
+## INSTALLATION DU PROJET AVEC DOCKER
+* <p>Si vous possedez Docker il suffit de cloner la branche main</p>
+* <p>Ensuite, se rendre dans la racine du projet et saisir la commande docker-compose up --build</p>
+<p>Après utiliser le port 6969 pour lancer le projet en local</p>
 # Après ces deux commandes, l'api vas demarrer en creant votre base de données s'il elle n'existe pas, ensuite elle va créer les tables en remplissant les tables roles et utilisateurs.
 # Un utilisation ayant les informations:
 * username:admin
